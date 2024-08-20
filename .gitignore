@@ -26,3 +26,10 @@ go.work.sum
 
 # jetbrains
 .idea
+
+# binary file
+bin/*
+dist/*
+
+# tar.gz
+*.tar.gz
