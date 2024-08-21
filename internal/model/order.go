@@ -7,8 +7,8 @@ import (
 // Order 表示一个订单
 type Order struct {
 	gorm.Model
-	FamilyID int         `gorm:"index" json:"family_id"`          // 家庭ID，外键
-	Items    []OrderItem `gorm:"foreignKey:OrderID" json:"items"` // 关联的订单项
+	FamilyID int         `gorm:"index" json:"family_id"`                                       // 家庭ID，外键
+	Items    []OrderItem `gorm:"foreignKey:OrderID;constraint:OnDelete:CASCADE;" json:"items"` // 关联的订单项，联级删除
 }
 
 // OrderItem 表示订单中的一个项
