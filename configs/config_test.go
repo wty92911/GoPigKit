@@ -1,6 +1,8 @@
 package configs
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestConfig(t *testing.T) {
 	t.Log("test config")

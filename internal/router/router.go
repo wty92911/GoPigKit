@@ -3,7 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/wty92911/GoPigKit/internal/controller"
-	"github.com/wty92911/GoPigKit/internal/middlewares"
+	"github.com/wty92911/GoPigKit/internal/middleware"
 )
 
 func Init(r *gin.Engine, c *controller.Controller) {
@@ -16,7 +16,7 @@ func Init(r *gin.Engine, c *controller.Controller) {
 
 	r.POST("/login")
 	auth := r.Group("/")
-	auth.Use(middlewares.AuthToken(c.Config.App.JwtSecret))
+	auth.Use(middleware.AuthToken(c.Config.App.JwtSecret))
 	{
 		auth.GET("/family")
 		auth.POST("/family")

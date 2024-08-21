@@ -1,4 +1,4 @@
-package middlewares
+package middleware
 
 // RoleAuth 是一个简单的角色鉴权中间件
 //func RoleAuth(requiredRole string) gin.HandlerFunc {
@@ -11,7 +11,7 @@ package middlewares
 //		}
 //
 //		验证用户角色
-//		if !services.HasRole(username.(string), requiredRole) {
+//		if !service.HasRole(username.(string), requiredRole) {
 //			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
 //			c.Abort()
 //			return

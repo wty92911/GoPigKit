@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/wty92911/GoPigKit/internal/services"
+	"github.com/wty92911/GoPigKit/internal/service"
 	"net/http"
 	"strconv"
 )
@@ -10,7 +10,7 @@ import (
 func (ctl *Controller) GetUsers(c *gin.Context) {
 	id := c.Query("id")
 	if id == "" {
-		users, err := services.GetAllUsers()
+		users, err := service.GetAllUsers()
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -23,7 +23,7 @@ func (ctl *Controller) GetUsers(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	user, err := services.GetUser(idInt)
+	user, err := service.GetUser(idInt)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

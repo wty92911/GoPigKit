@@ -3,17 +3,14 @@ package controller
 
 import (
 	"github.com/wty92911/GoPigKit/configs"
-	"github.com/wty92911/GoPigKit/pkg/wxhelper"
 )
 
 type Controller struct {
-	Config   *configs.Config
-	wxHelper wxhelper.WxHelper
+	Config *configs.Config
 }
 
 func NewController(config *configs.Config) *Controller {
 	return &Controller{
-		Config:   config,
-		wxHelper: wxhelper.WxHelper{},
+		Config: config,
 	}
 }

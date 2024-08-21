@@ -1,4 +1,4 @@
-package models
+package model
 
 // Food 食品字段结构体
 type Food struct {

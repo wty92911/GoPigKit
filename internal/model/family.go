@@ -1,4 +1,4 @@
-package models
+package model
 
 type Family struct {
 	ID   int

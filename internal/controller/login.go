@@ -1,7 +1,8 @@
 package controller
 
 import (
-	"github.com/wty92911/GoPigKit/internal/middlewares"
+	"github.com/wty92911/GoPigKit/internal/middleware"
+	"github.com/wty92911/GoPigKit/pkg/wxhelper"
 	"net/http"
 	"time"
 
@@ -20,7 +21,7 @@ func (ctl *Controller) WeChatLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	rsp, err := ctl.wxHelper.Code2Session(ctl.Config.App, req.Code)
+	rsp, err := wxhelper.Code2Session(ctl.Config.App, req.Code)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -28,7 +29,7 @@ func (ctl *Controller) WeChatLogin(c *gin.Context) {
 	}
 
 	// Create the Claims
-	claims := middlewares.Claims{
+	claims := middleware.Claims{
 		OpenID: rsp.OpenID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),

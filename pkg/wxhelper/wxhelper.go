@@ -14,14 +14,6 @@ const (
 	Code2SessionAPI = "https://api.weixin.qq.com/sns/jscode2session"
 )
 
-// WxHelper Wechat Helper
-type WxHelper struct{}
-
-// NewWxHelper 创建实例
-func NewWxHelper() *WxHelper {
-	return &WxHelper{}
-}
-
 // Code2SessionResponse 微信 code2session 响应结构体
 type Code2SessionResponse struct {
 	OpenID     string `json:"openid"`
@@ -32,7 +24,7 @@ type Code2SessionResponse struct {
 }
 
 // Code2Session 请求微信 code2session 接口
-func (w *WxHelper) Code2Session(config *configs.AppConfig, jsCode string) (*Code2SessionResponse, error) {
+func Code2Session(config *configs.AppConfig, jsCode string) (*Code2SessionResponse, error) {
 	params := url.Values{}
 	params.Add("appid", config.ID)
 	params.Add("secret", config.Secret)
