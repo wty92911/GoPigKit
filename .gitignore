@@ -33,3 +33,5 @@ dist/*
 
 # tar.gz
 *.tar.gz
+
+configs/config.yaml

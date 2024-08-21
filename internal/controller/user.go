@@ -1,4 +1,4 @@
-package controllers
+package controller
 
 import (
 	"github.com/gin-gonic/gin"
@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func GetUsers(c *gin.Context) {
+func (ctl *Controller) GetUsers(c *gin.Context) {
 	id := c.Query("id")
 	if id == "" {
 		users, err := services.GetAllUsers()
