@@ -1,0 +1,14 @@
+server:
+  host: "127.0.0.1"
+  port: 8080
+
+database:
+  user: "admin"
+  password: "secret"
+  name: "mydb"
+app:
+  id: "xxx"
+  name: "xxx"
+  secret: "xxx" # 小程序官网secret
+  jwt_secret: "xxx=" #随机生成
+log:
