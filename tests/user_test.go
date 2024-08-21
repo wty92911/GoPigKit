@@ -1,13 +1,14 @@
-package model
+package controllers
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/wty92911/GoPigKit/internal/model"
 	"testing"
 )
 
 func TestStruct(t *testing.T) {
 	validate := validator.New()
-	user := User{
+	user := model.User{
 		Name: "jacklove",
 		Role: "diner",
 	}
