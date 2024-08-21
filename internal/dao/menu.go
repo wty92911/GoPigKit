@@ -3,7 +3,6 @@ package dao
 import (
 	"github.com/wty92911/GoPigKit/internal/database"
 	"github.com/wty92911/GoPigKit/internal/model"
-	"time"
 )
 
 // AddMenuItem 添加菜单项
@@ -12,7 +11,6 @@ func AddMenuItem(familyID int, foodID int, quantity int) error {
 		FamilyID: familyID,
 		FoodID:   foodID,
 		Quantity: quantity,
-		AddedAt:  time.Now(),
 	}
 	return database.DB.Create(&menuItem).Error
 }
