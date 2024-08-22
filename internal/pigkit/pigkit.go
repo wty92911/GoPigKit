@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	configPath = "./configs/config.json"
+	configPath = "../configs/config.yaml"
 )
 
 func Run() {

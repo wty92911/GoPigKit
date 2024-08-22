@@ -18,14 +18,16 @@ func Init(config *configs.DatabaseConfig) error {
 		config.Host,
 		config.Port,
 		config.Name)
-	DB, err = gorm.Open(mysql.Open(dsn))
+	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	fmt.Println("Database DSN:", dsn) // Debug print
 	if err != nil {
 		return err
 	}
 	err = DB.AutoMigrate(
 		&model.User{},
-		&model.Family{},
 		&model.Food{},
+
+		&model.Family{},
 		&model.Order{},
 		&model.OrderItem{},
 	)

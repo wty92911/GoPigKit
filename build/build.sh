@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # shellcheck disable=SC2164
 cd "$(cd "$(dirname "$0")";pwd)"
@@ -12,30 +12,30 @@ bin=pigkit
 set -e
 export GO111MODULE=on
 
-version=`cat CHANGELOG.md|grep "^Version "| head -1|awk -F' ' '{print $2}'`
-fourthVersion=`date "+%Y%m%d%H%M"`
+version=$(grep "^Version " CHANGELOG.md | head -1 | awk -F' ' '{print $2}')
+fourthVersion=$(date "+%Y%m%d%H%M")
 version=${version}_${fourthVersion}
 
-if [[ `echo ${env} |grep -c win` -eq 1 ]]; then
+if echo "${env}" | grep -q "win"; then
     export GOARCH=amd64 GOOS=windows
 fi
 
-if [[ `echo ${env} |grep -c linux` -eq 1 ]]; then
+if echo "${env}" | grep -q "linux"; then
     export GOARCH=amd64 GOOS=linux
 fi
 
-if [[ `echo ${env} |grep -c mac` -eq 1 ]]; then
+if echo "${env}" | grep -q "mac"; then
     export GOARCH=amd64 GOOS=darwin
 fi
 
-if [[ "$lint" == lint ]]; then
+if [ "$lint" = "lint" ]; then
     golangci-lint run
 fi
 
-function go_test() {
+go_test() {
     mkdir -p coverage
     go test -coverprofile=coverage/cover.out ./...
-    if [[ $? -ne 0 ]]; then
+    if [ $? -ne 0 ]; then
         echo "unit test failed!!!"
         exit 1
     fi
@@ -44,8 +44,7 @@ function go_test() {
 
 echo ["Unit Test"]
 
-if [[ "$unit_test" == test ]];
-then
+if [ "$unit_test" = "test" ]; then
     go_test
 else
     echo -e "\033[31mUnit tests are not performed!\033[0m"
@@ -59,8 +58,7 @@ echo version ${version}
 echo
 echo [branch]
 echo -n ${bin}": "
-# shellcheck disable=SC2006
-branch=`git branch |  awk  '$1 == "*"{print $2}'`
+branch=$(git branch | awk '$1 == "*"{print $2}')
 echo -e "\033[32m${branch}\033[0m"
 
 echo
@@ -68,10 +66,17 @@ echo [build]
 go build -ldflags "-s -w -X main.version=${version}" -o ./bin/${bin} ./cmd/pigkit
 
 rm -rf ./dist ./*.tar.gz
-mkdir -p ./dist/${bin}/log ./dist/${bin}/conf ./dist/${bin}/static
+mkdir -p ./dist/${bin}/log ./dist/${bin}/configs ./dist/${bin}/static ./dist/${bin}/bin
 
-cp -r ./bin ./dist/${bin}/
+cp ./bin/${bin} ./dist/${bin}/bin
 cp -r ./cmd/${bin}/server.sh ./dist/${bin}/bin/
+
+# copy configs
+cp ./configs/config.yaml ./dist/${bin}/configs/
+
+# copy docker file
+cp ./docker-compose.yml ./dist/${bin}/
+#cp ./Dockerfile ./dist/${bin}/
 
 cd dist
 
@@ -80,10 +85,9 @@ tar czf "${tarFileName}" ${bin}/*
 mv ./*.tar.gz ../
 cd ..
 
-# shellcheck disable=SC2006
-if [[ `uname` = Darwin ]]; then
+if [ "$(uname)" = "Darwin" ]; then
     md5 "${tarFileName}"
-elif [[ `uname` = Linux ]]; then
+elif [ "$(uname)" = "Linux" ]; then
     md5sum "${tarFileName}"
 else
     md5sum "${tarFileName}"
