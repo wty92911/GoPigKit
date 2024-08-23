@@ -13,9 +13,7 @@ type Order struct {
 
 // OrderItem 表示订单中的一个项
 type OrderItem struct {
-	gorm.Model
-	OrderID  int  `gorm:"index" json:"order_id"` // 订单ID，外键
-	FoodID   int  `json:"food_id"`               // 食品ID
-	Food     Food `json:"food"`                  // 关联的食品信息
-	Quantity int  `json:"quantity"`              // 数量
+	OrderID  int `gorm:"primaryKey" json:"order_id"` // 订单ID，外键
+	FoodID   int `gorm:"primaryKey" json:"food_id"`  // 食品ID
+	Quantity int `json:"quantity"`                   // 数量
 }

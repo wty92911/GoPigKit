@@ -21,7 +21,7 @@ func CreateUser(user *model.User) error {
 
 // DeleteUser 通过openID删除用户
 func DeleteUser(openID string) error {
-	return database.DB.Delete(&model.User{}, openID).Error
+	return database.DB.Delete(&model.User{OpenID: openID}).Error
 }
 
 // UpdateUser 更新用户信息

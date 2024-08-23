@@ -25,24 +25,24 @@ func UpdateFood(food *model.Food) error {
 }
 
 // DeleteFood 根据id删除食品
-func DeleteFood(id int) error {
+func DeleteFood(id uint) error {
 	return database.DB.Delete(&model.Food{}, id).Error
 }
 
-// ListFoods 获取所有食品
-func ListFoods() ([]model.Food, error) {
-	var foods []model.Food
-	if err := database.DB.Find(&foods).Error; err != nil {
-		return nil, err
-	}
-	return foods, nil
-}
+//// ListFoods 获取所有食品
+//func ListFoods() ([]model.Food, error) {
+//	var foods []model.Food
+//	if err := database.DB.Find(&foods).Error; err != nil {
+//		return nil, err
+//	}
+//	return foods, nil
+//}
 
-// FindFoodsByFamilyID 根据FamilyID获取食品
-func FindFoodsByFamilyID(familyID int) ([]model.Food, error) {
-	var foods []model.Food
-	if err := database.DB.Where("family_id = ?", familyID).Find(&foods).Error; err != nil {
-		return nil, err
-	}
-	return foods, nil
-}
+//// FindFoodsByFamilyID 根据FamilyID获取食品
+//func FindFoodsByFamilyID(familyID uint) ([]model.Food, error) {
+//	var foods []model.Food
+//	if err := database.DB.Where("family_id = ?", familyID).Find(&foods).Error; err != nil {
+//		return nil, err
+//	}
+//	return foods, nil
+//}

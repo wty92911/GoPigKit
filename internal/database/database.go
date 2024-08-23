@@ -3,7 +3,6 @@ package database
 import (
 	"fmt"
 	"github.com/wty92911/GoPigKit/configs"
-	"github.com/wty92911/GoPigKit/internal/model"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -23,13 +22,13 @@ func Init(config *configs.DatabaseConfig) error {
 	if err != nil {
 		return err
 	}
-	err = DB.AutoMigrate(
-		&model.User{},
-		&model.Food{},
-
-		&model.Family{},
-		&model.Order{},
-		&model.OrderItem{},
-	)
+	//err = DB.AutoMigrate(
+	//	&model.Family{},
+	//	&model.User{},
+	//	&model.Food{},
+	//
+	//	&model.Order{},
+	//	&model.OrderItem{},
+	//)
 	return err
 }
