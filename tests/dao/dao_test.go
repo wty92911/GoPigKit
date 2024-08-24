@@ -98,12 +98,12 @@ func TestUserFoodFamily(t *testing.T) {
 		{Title: "test4", Price: 140, Desc: "This is a food", Images: "[https://www.baidu.com]", FamilyID: 2},
 	}
 	families := []model.Family{
-		{Name: "test1", OwnerID: 1},
-		{Name: "test2", OwnerID: 2},
+		{Name: "test1", OwnerOpenID: 1},
+		{Name: "test2", OwnerOpenID: 2},
 	}
 	familiesWithPreloads := []model.Family{
-		{Name: "test1", OwnerID: 1, Users: []model.User{users[0], users[1]}, Foods: []model.Food{foods[0], foods[1]}},
-		{Name: "test2", OwnerID: 2, Users: []model.User{users[2], users[3]}, Foods: []model.Food{foods[2], foods[3]}},
+		{Name: "test1", OwnerOpenID: 1, Users: []model.User{users[0], users[1]}, Foods: []model.Food{foods[0], foods[1]}},
+		{Name: "test2", OwnerOpenID: 2, Users: []model.User{users[2], users[3]}, Foods: []model.Food{foods[2], foods[3]}},
 	}
 	for _, family := range families {
 		err = dao.CreateFamily(&family)
@@ -183,8 +183,8 @@ func TestMenuOrder(t *testing.T) {
 	assert.Nil(t, err, "Database migration should not return an error")
 
 	families := []model.Family{
-		{Name: "test1", OwnerID: 1},
-		{Name: "test2", OwnerID: 2},
+		{Name: "test1", OwnerOpenID: 1},
+		{Name: "test2", OwnerOpenID: 2},
 	}
 	Orders := []model.Order{
 		{FamilyID: 1},
@@ -258,4 +258,23 @@ func TestMenuOrder(t *testing.T) {
 		err = dao.DeleteFamily(uint(i + 1))
 		assert.Nil(t, err, "Create family should not return an error")
 	}
+}
+
+func TestCreateNullForeignKey(t *testing.T) {
+	err := Init()
+	assert.Nil(t, err, "Database initialization should not return an error")
+
+	clearDatabase(database.DB)
+
+	err = database.DB.AutoMigrate(&model.Family{}, &model.User{}, &model.Food{})
+	assert.Nil(t, err, "Database migration should not return an error")
+
+	user := model.User{
+		OpenID: "test1", Name: "test",
+	}
+	err = dao.CreateUser(&user)
+	assert.Nil(t, err, "Create user should not return an error")
+
+	user1, _ := dao.GetUser("test1")
+	assert.Equal(t, user1.FamilyID, 0)
 }
