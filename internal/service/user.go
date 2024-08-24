@@ -1,15 +1,23 @@
 package service
 
 import (
-	"fmt"
+	"github.com/wty92911/GoPigKit/internal/dao"
 	"github.com/wty92911/GoPigKit/internal/model"
 )
 
-// TODO:
-func GetAllUsers() ([]model.User, error) {
-	return nil, nil
+func UpdateUser(user *model.User) error {
+	return dao.UpdateUser(user)
 }
 
-func GetUser(id int) (*model.User, error) {
-	return nil, fmt.Errorf("user id:%d not found", id)
+func CreateUser(user *model.User) error {
+	return dao.CreateUser(user)
+}
+
+func GetUser(openID string) (*model.User, error) {
+	return dao.GetUser(openID)
+}
+
+func ExistUser(openID string) bool {
+	_, err := dao.GetUser(openID)
+	return err == nil
 }
