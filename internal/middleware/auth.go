@@ -1,8 +1,10 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/wty92911/GoPigKit/internal/dao"
 	"net/http"
 	"strings"
 )
@@ -35,6 +37,41 @@ func AuthToken(jwtSecret string) gin.HandlerFunc {
 			return
 		}
 
+		c.Next()
+	}
+}
+
+// AuthFamily 验证是否加入家庭，
+func AuthFamily(mustOwner bool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		openid := c.GetString("openid")
+		if openid == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
+			c.Abort()
+			return
+		}
+		user, err := dao.GetUser(openid)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.Abort()
+			return
+		}
+		if user.FamilyID == 0 {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User not in family"})
+			c.Abort()
+			return
+		}
+
+		if mustOwner {
+			family, err := dao.GetFamily(user.FamilyID)
+			if err != nil || family.OwnerOpenID != user.OpenID {
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"error": fmt.Sprintf("User is not owner of family %d", family.ID),
+				})
+				c.Abort()
+				return
+			}
+		}
 		c.Next()
 	}
 }
