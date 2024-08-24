@@ -21,7 +21,17 @@ type WeChatLoginRequest struct {
 	UserInfo UserInfo `json:"userInfo"`
 }
 
-// WeChatLogin 后端绑定微信登陆, 返回token
+// WeChatLogin godoc
+// @Summary 后端绑定微信登陆, 返回token
+// @Description 用户使用微信登录，后端绑定微信账户并返回JWT token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param req body WeChatLoginRequest true "微信登录请求"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /login [post]
 func (ctl *Controller) WeChatLogin(c *gin.Context) {
 	var req WeChatLoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

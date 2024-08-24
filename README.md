@@ -55,3 +55,9 @@ go run database/migrations/001_create_users_table.sql
 ```sh
 go run cmd/pigkit/main.go
 ```
+
+## Swag Doc
+```shell
+swag init -g cmd/pigkit/main.go --parseDependency --parseInternal 
+
+```

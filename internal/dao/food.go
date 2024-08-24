@@ -38,11 +38,11 @@ func DeleteFood(id uint) error {
 //	return foods, nil
 //}
 
-//// FindFoodsByFamilyID 根据FamilyID获取食品
-//func FindFoodsByFamilyID(familyID uint) ([]model.Food, error) {
-//	var foods []model.Food
-//	if err := database.DB.Where("family_id = ?", familyID).Find(&foods).Error; err != nil {
-//		return nil, err
-//	}
-//	return foods, nil
-//}
+// GetFoodsByFamilyID 根据FamilyID获取食品
+func GetFoodsByFamilyID(familyID uint) ([]model.Food, error) {
+	var foods []model.Food
+	if err := database.DB.Where("family_id = ?", familyID).Find(&foods).Error; err != nil {
+		return nil, err
+	}
+	return foods, nil
+}

@@ -10,7 +10,6 @@ func TestStruct(t *testing.T) {
 	validate := validator.New()
 	user := model.User{
 		Name: "jacklove",
-		Role: "diner",
 	}
 	err := validate.Struct(user)
 	if err != nil {

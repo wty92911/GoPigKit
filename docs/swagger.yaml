@@ -1,0 +1,334 @@
+basePath: /api/v1
+definitions:
+  github_com_wty92911_GoPigKit_internal_model.Category:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      family_id:
+        type: integer
+      foods:
+        items:
+          $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Food'
+        type: array
+      id:
+        type: integer
+      image_url:
+        type: string
+      mid_name:
+        type: string
+      name:
+        type: string
+      top_name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  github_com_wty92911_GoPigKit_internal_model.Family:
+    properties:
+      categories:
+        items:
+          $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Category'
+        type: array
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      menu_items:
+        items:
+          $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.MenuItem'
+        type: array
+      name:
+        type: string
+      orders:
+        items:
+          $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Order'
+        type: array
+      owner_open_id:
+        type: string
+      updatedAt:
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.User'
+        type: array
+    required:
+    - name
+    type: object
+  github_com_wty92911_GoPigKit_internal_model.Food:
+    properties:
+      category_id:
+        description: 食品分类ID，外键
+        type: integer
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      desc:
+        description: 食品描述
+        type: string
+      family_id:
+        description: 家庭ID，外键
+        type: integer
+      id:
+        type: integer
+      image_urls:
+        description: 食品图片
+        type: string
+      price:
+        description: 食品价格
+        type: integer
+      title:
+        description: 食品名称
+        type: string
+      updatedAt:
+        type: string
+      user:
+        $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.User'
+    type: object
+  github_com_wty92911_GoPigKit_internal_model.MenuItem:
+    properties:
+      createdBy:
+        type: string
+      family_id:
+        description: 所属家庭ID
+        type: integer
+      food_id:
+        description: 食品ID
+        type: integer
+      quantity:
+        description: 数量
+        type: integer
+      user:
+        $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.User'
+    type: object
+  github_com_wty92911_GoPigKit_internal_model.Order:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      family_id:
+        description: 家庭ID，外键
+        type: integer
+      id:
+        type: integer
+      items:
+        description: 关联的订单项，联级删除
+        items:
+          $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.OrderItem'
+        type: array
+      updatedAt:
+        type: string
+    type: object
+  github_com_wty92911_GoPigKit_internal_model.OrderItem:
+    properties:
+      createdBy:
+        type: string
+      food_id:
+        description: 食品ID
+        type: integer
+      order_id:
+        description: 订单ID，外键
+        type: integer
+      quantity:
+        description: 数量
+        type: integer
+      user:
+        $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.User'
+    type: object
+  github_com_wty92911_GoPigKit_internal_model.User:
+    properties:
+      avatar_url:
+        type: string
+      created_at:
+        description: Role      string         `json:"role" validate:"oneof=owner member"`
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      family_id:
+        type: integer
+      name:
+        type: string
+      open_id:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - name
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  internal_controller.UserInfo:
+    properties:
+      avatar_url:
+        type: string
+      nickname:
+        type: string
+    type: object
+  internal_controller.WeChatLoginRequest:
+    properties:
+      code:
+        type: string
+      userInfo:
+        $ref: '#/definitions/internal_controller.UserInfo'
+    required:
+    - code
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: 2066946886@qq.com
+    name: wty92911
+    url: https://github.com/wty92911
+  description: 初始化路由
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: API
+  version: "1.0"
+paths:
+  /api/v1/family:
+    get:
+      description: 获取所有家庭的列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Family'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获得所有家庭
+      tags:
+      - family
+  /api/v1/family/create:
+    post:
+      description: 创建一个新的家庭
+      parameters:
+      - description: 家庭名称
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Family'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 创建家庭
+      tags:
+      - family
+  /api/v1/family/details:
+    get:
+      description: 获取指定家庭的详细信息，包括可选的预加载项
+      parameters:
+      - description: 家庭ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - collectionFormat: csv
+        description: 预加载项
+        in: query
+        items:
+          type: string
+        name: preloads
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Family'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获得家庭详细情况
+      tags:
+      - family
+  /api/v1/family/join:
+    post:
+      description: 加入一个现有的家庭
+      parameters:
+      - description: 家庭ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Family'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 加入家庭
+      tags:
+      - family
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: 用户使用微信登录，后端绑定微信账户并返回JWT token
+      parameters:
+      - description: 微信登录请求
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/internal_controller.WeChatLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 后端绑定微信登陆, 返回token
+      tags:
+      - auth
+swagger: "2.0"
