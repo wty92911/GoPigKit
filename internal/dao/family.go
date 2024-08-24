@@ -14,6 +14,15 @@ func GetFamily(id uint) (*model.Family, error) {
 	return &family, nil
 }
 
+// GetAllFamilies 获取所有Family
+func GetAllFamilies() ([]*model.Family, error) {
+	var families []*model.Family
+	if err := database.DB.Find(&families).Error; err != nil {
+		return nil, err
+	}
+	return families, nil
+}
+
 // GetFamilyWithPreloads 根据ID获取Family并预加载关联关系
 func GetFamilyWithPreloads(id uint, preloads []string) (*model.Family, error) {
 	var family model.Family

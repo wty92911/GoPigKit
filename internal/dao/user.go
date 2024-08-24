@@ -16,6 +16,9 @@ func GetUser(openID string) (*model.User, error) {
 
 // CreateUser 创建新用户
 func CreateUser(user *model.User) error {
+	if user.FamilyID == 0 {
+		return database.DB.Omit("FamilyID").Create(user).Error
+	}
 	return database.DB.Create(user).Error
 }
 
