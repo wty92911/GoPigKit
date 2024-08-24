@@ -52,7 +52,29 @@ func SameFoods(a, b []model.Food) bool {
 	}
 	return true
 }
+func SameOrderItems(a, b []model.OrderItem) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i].OrderID != b[i].OrderID || a[i].FoodID != b[i].FoodID || a[i].Quantity != b[i].Quantity {
+			return false
+		}
+	}
+	return true
+}
 
+func SameMenuItems(a, b []model.MenuItem) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i].FamilyID != b[i].FamilyID || a[i].FoodID != b[i].FoodID || a[i].Quantity != b[i].Quantity {
+			return false
+		}
+	}
+	return true
+}
 func TestUserFoodFamily(t *testing.T) {
 
 	err := Init()
@@ -151,21 +173,89 @@ func TestUserFoodFamily(t *testing.T) {
 	}
 }
 
-//func TestMenuOrder(t *testing.T) {
-//	err := Init()
-//	assert.Nil(t, err, "Database initialization should not return an error")
-//
-//	clearDatabase(database.DB)
-//
-//	err = database.DB.AutoMigrate(&model.Family{}, &model.Order{}, &model.MenuItem{}, &model.OrderItem{})
-//	assert.Nil(t, err, "Database migration should not return an error")
-//
-//	families := []model.Family{
-//		{Name: "test1", OwnerID: 1},
-//		{Name: "test2", OwnerID: 2},
-//	}
-//	Orders := []model.Order{
-//		{FamilyID: 1, Items: []model.OrderItem{{FoodID: 1, Quantity: 1}}},},
-//    }
-//	}
-//}
+func TestMenuOrder(t *testing.T) {
+	err := Init()
+	assert.Nil(t, err, "Database initialization should not return an error")
+
+	clearDatabase(database.DB)
+
+	err = database.DB.AutoMigrate(&model.Family{}, &model.Order{}, &model.OrderItem{}, &model.MenuItem{})
+	assert.Nil(t, err, "Database migration should not return an error")
+
+	families := []model.Family{
+		{Name: "test1", OwnerID: 1},
+		{Name: "test2", OwnerID: 2},
+	}
+	Orders := []model.Order{
+		{FamilyID: 1},
+		{FamilyID: 1},
+		{FamilyID: 2},
+		{FamilyID: 2},
+	}
+	OrderItems := []model.OrderItem{
+		{OrderID: 1, FoodID: 1, Quantity: 1},
+		{OrderID: 1, FoodID: 2, Quantity: 2},
+		{OrderID: 2, FoodID: 1, Quantity: 1},
+		{OrderID: 2, FoodID: 2, Quantity: 2},
+		{OrderID: 3, FoodID: 1, Quantity: 1},
+		{OrderID: 3, FoodID: 2, Quantity: 2},
+		{OrderID: 4, FoodID: 1, Quantity: 1},
+		{OrderID: 4, FoodID: 2, Quantity: 2},
+	}
+	MenuItems := []model.MenuItem{
+		{FamilyID: 1, FoodID: 1, Quantity: 1},
+		{FamilyID: 1, FoodID: 2, Quantity: 1},
+		{FamilyID: 2, FoodID: 1, Quantity: 1},
+		{FamilyID: 2, FoodID: 2, Quantity: 1},
+	}
+
+	for _, family := range families {
+		err = dao.CreateFamily(&family)
+		assert.Nil(t, err, "Create family should not return an error")
+	}
+
+	for _, order := range Orders {
+		err = dao.CreateOrder(&order)
+		assert.Nil(t, err, "Create order should not return an error")
+	}
+
+	for _, orderItem := range OrderItems {
+		err = dao.AddOrderItem(&orderItem)
+		assert.Nil(t, err, "Create order item should not return an error")
+	}
+
+	for _, menuItem := range MenuItems {
+		err = dao.AddMenuItem(&menuItem)
+		assert.Nil(t, err, "Create menu item should not return an error")
+	}
+
+	MenuItems[0].Quantity = 2
+	err = dao.UpdateMenuItem(&MenuItems[0])
+	assert.Nil(t, err, "Update menu item should not return an error")
+	OrderItems[0].Quantity = 2
+	err = dao.UpdateOrderItem(&OrderItems[0])
+	assert.Nil(t, err, "Update order item should not return an error")
+
+	family, err := dao.GetFamilyWithPreloads(1, []string{"Orders.Items", "MenuItems"})
+	assert.Nil(t, err, "Get family with preloads should not return an error")
+	assert.Equal(t, 2, len(family.Orders), "Family should have 2 orders")
+	assert.Equal(t, SameOrderItems(family.Orders[0].Items, OrderItems[:2]), true, "Family Order Items not match")
+	assert.Equal(t, SameOrderItems(family.Orders[1].Items, OrderItems[2:4]), true, "Family Order Items not match")
+	assert.Equal(t, SameMenuItems(family.MenuItems, MenuItems[:2]), true, "Family MenuItem not match")
+	for i := range MenuItems {
+		err = dao.DeleteMenuItem(uint(i + 1))
+		assert.Nil(t, err, "Create menu item should not return an error")
+	}
+	for i := range OrderItems {
+		err = dao.DeleteOrderItem(uint(i + 1))
+		assert.Nil(t, err, "Create order should not return an error")
+	}
+	for i := range Orders {
+		err = dao.DeleteOrder(uint(i + 1))
+		assert.Nil(t, err, "Create order should not return an error")
+	}
+	for i := range families {
+		err = dao.DeleteFamily(uint(i + 1))
+		assert.Nil(t, err, "Create family should not return an error")
+	}
+}

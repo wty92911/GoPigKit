@@ -6,12 +6,7 @@ import (
 )
 
 // AddOrderItem 添加菜单项
-func AddOrderItem(orderID int, foodID int, quantity int) error {
-	orderItem := model.OrderItem{
-		OrderID:  orderID,
-		FoodID:   foodID,
-		Quantity: quantity,
-	}
+func AddOrderItem(orderItem *model.OrderItem) error {
 	return database.DB.Create(&orderItem).Error
 }
 
