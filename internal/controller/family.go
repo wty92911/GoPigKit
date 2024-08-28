@@ -2,7 +2,6 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/wty92911/GoPigKit/internal/model"
 	"github.com/wty92911/GoPigKit/internal/service"
 	"net/http"
 	"strconv"
@@ -45,7 +44,6 @@ func (ctl *Controller) GetFamilyWithPreloads(c *gin.Context) {
 	if !ok {
 		preloads = []string{}
 	}
-	var family *model.Family
 	family, err := service.GetFamilyWithPreloads(uint(idInt), preloads)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

@@ -1,13 +1,16 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Category struct {
 	gorm.Model
-	TopName  string `gorm:"primaryKey" json:"top_name"`
-	MidName  string `gorm:"primaryKey" json:"mid_name"`
-	Name     string `gorm:"primaryKey" json:"name"`
-	FamilyID uint   `json:"family_id"`
-	Foods    []Food `gorm:"foreignKey:CategoryID" json:"foods"`
+	FamilyID uint   `json:"family_id" gorm:"uniqueIndex:unique_combination"`
+	TopName  string `json:"top_name" gorm:"uniqueIndex:unique_combination"`
+	MidName  string `json:"mid_name" gorm:"uniqueIndex:unique_combination"`
+	Name     string `json:"name" gorm:"uniqueIndex:unique_combination"`
 	ImageURL string `json:"image_url"`
+
+	Foods []Food `gorm:"foreignKey:CategoryID" json:"foods"`
 }

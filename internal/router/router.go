@@ -32,6 +32,7 @@ func Init(r *gin.Engine, c *controller.Controller) {
 		authFamily := auth.Group("")
 		authFamily.Use(middleware.AuthFamily(false))
 		{
+			auth.GET("/categories", c.GetCategories)
 			auth.GET("/food")
 			auth.POST("/food")
 
@@ -43,6 +44,9 @@ func Init(r *gin.Engine, c *controller.Controller) {
 		}
 		authFamily.Use(middleware.AuthFamily(true))
 		{
+			auth.POST("/category")
+			auth.DELETE("/category")
+
 			auth.DELETE("/family")
 			auth.DELETE("/food")
 			auth.DELETE("/order")
