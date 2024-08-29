@@ -1,3 +1,4 @@
+// Package database is a database package of gorm mysql and minio client.
 package database
 
 import (
@@ -16,11 +17,11 @@ func Init(config *configs.DatabaseConfig) error {
 	var err error
 	// Init mysql
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
-		config.User,
-		config.Password,
-		config.Host,
-		config.Port,
-		config.Name)
+		config.Sql.User,
+		config.Sql.Password,
+		config.Sql.Host,
+		config.Sql.Port,
+		config.Sql.Name)
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	fmt.Println("Database DSN:", dsn) // Debug print
 	if err != nil {
@@ -28,13 +29,14 @@ func Init(config *configs.DatabaseConfig) error {
 	}
 
 	// Init Minio
-	MinioClient, err = minio.New("play.min.io", &minio.Options{
-		Creds:  credentials.NewStaticV4("your-access-key", "your-secret-key", ""),
-		Secure: true,
+	MinioClient, err = minio.New(config.MinIO.Endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(config.MinIO.AccessKey, config.MinIO.SecretKey, ""),
+		Secure: false,
 	})
 	if err != nil {
 		return err
 	}
+
 	//err = DB.AutoMigrate(
 	//	&model.Family{},
 	//	&model.User{},

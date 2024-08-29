@@ -37,7 +37,7 @@ func (ctl *Controller) CreateCategory(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	err := service.CreateCategory(uint(familyID), topName, midName, name, file)
+	_, err = service.CreateCategory(uint(familyID), topName, midName, name, file)
 	// Upload image file
 
 }

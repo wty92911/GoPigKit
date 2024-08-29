@@ -12,5 +12,5 @@ func GetCategories(familyID uint) ([]model.Category, error) {
 }
 
 func CreateCategory(familyID uint, topName, midName, name string, file *multipart.FileHeader) (*model.Category, error) {
-	
+	return nil, nil
 }
