@@ -20,12 +20,12 @@ services:
     environment:
       MINIO_ROOT_USER: pigkitadmin
       MINIO_ROOT_PASSWORD: PigkitAdmin123
-    command: server /data
+    command: server /data --console-address ":9001"
     ports:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - minio-data:/data
+      - ./data:/data
 
 volumes:
   mysql-data:
