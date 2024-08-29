@@ -14,9 +14,9 @@ type Order struct {
 
 // OrderItem 表示订单中的一个项
 type OrderItem struct {
-	OrderID   uint `gorm:"primaryKey" json:"order_id"` // 订单ID，外键
-	FoodID    int  `gorm:"primaryKey" json:"food_id"`  // 食品ID
-	Quantity  int  `json:"quantity"`                   // 数量
-	CreatedBy string
-	User      User `gorm:"foreignKey:CreatedBy;references:OpenID"`
+	OrderID   uint   `gorm:"primaryKey" json:"order_id"`          // 订单ID，外键
+	FoodID    int    `gorm:"primaryKey" json:"food_id"`           // 食品ID
+	Quantity  int    `json:"quantity"`                            // 数量
+	CreatedBy string `gorm:"type:varchar(255)" json:"created_by"` // 创建者
+	User      User   `gorm:"foreignKey:CreatedBy;references:OpenID"`
 }
