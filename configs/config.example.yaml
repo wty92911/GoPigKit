@@ -1,18 +1,23 @@
 server:
-  host: "127.0.0.1"
+  host: 127.0.0.1
   port: 8080
 
 database:
-  driver: mysql
-  host: localhost
-  port: 3306
-  user: admin
-  password: admin
-  dbname: xxx
-
+  sql:
+    driver: mysql
+    host: localhost
+    port: 3306
+    user: admin
+    password: admin
+    name: pigkit
+  minio:
+    access_key: xxx
+    secret_key: xxx
+    endpoint: http://xxx:9000
+    bucket: pigkit
 app:
-  id: "xxx"
-  name: "xxx"
-  secret: "xxx" # 小程序官网secret
-  jwt_secret: "xxx=" #随机生成
+  id: wx2c1f202729da1019
+  name: pigkit
+  secret: bf74ce6acaea9828e2ff2f7a190f299f # 小程序官网secret
+  jwt_secret: N3pQdW5JZ3JjY2lGZTJ3dHdJd3JmYm5OZGVKZDhSVDQ= #随机生成
 log:

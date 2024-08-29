@@ -18,13 +18,22 @@ type ServerConfig struct {
 	Port int    `yaml:"port"`
 }
 type DatabaseConfig struct {
+	Sql   *SqlConfig   `yaml:"sql"`
+	MinIO *MinIOConfig `yaml:"minio"`
+}
+type SqlConfig struct {
 	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
 	Name     string `yaml:"name"`
 }
-
+type MinIOConfig struct {
+	Endpoint  string `yaml:"endpoint"`
+	AccessKey string `yaml:"access_key"`
+	SecretKey string `yaml:"secret_key"`
+	Bucket    string `yaml:"bucket"`
+}
 type AppConfig struct {
 	ID        string `yaml:"id"`
 	Name      string `yaml:"name"`
