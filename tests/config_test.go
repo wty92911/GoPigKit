@@ -12,5 +12,5 @@ func TestConfig(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	t.Log(config)
+	t.Log(config.Database.MinIO.AccessKey)
 }

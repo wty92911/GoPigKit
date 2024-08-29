@@ -12,11 +12,13 @@ import (
 
 func Init() error {
 	return database.Init(&configs.DatabaseConfig{
-		Host:     "81.70.53.202",
-		Port:     3306,
-		User:     "root",
-		Password: "PigkitAdmin123",
-		Name:     "pigkit_test",
+		Sql: &configs.SqlConfig{
+			Host:     "81.70.53.202",
+			Port:     3306,
+			User:     "root",
+			Password: "PigkitAdmin123",
+			Name:     "pigkit_test",
+		},
 	})
 }
 func clearDatabase(db *gorm.DB) {
