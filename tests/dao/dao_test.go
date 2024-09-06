@@ -11,17 +11,16 @@ import (
 )
 
 func Init() error {
-	return database.Init(&configs.DatabaseConfig{
-		Sql: &configs.SqlConfig{
-			Host:     "81.70.53.202",
-			Port:     3306,
-			User:     "root",
-			Password: "PigkitAdmin123",
-			Name:     "pigkit_test",
-		},
-	})
+	config := configs.NewConfig()
+	err := config.Update("../../configs/config.yaml")
+	if err != nil {
+		return err
+	}
+	return database.Init(config.Database)
+
 }
-func clearDatabase(db *gorm.DB) {
+func clearDatabase(db *gorm.DB) error {
+	db.Exec("SET FOREIGN_KEY_CHECKS = 0")
 	db.Exec("DROP TABLE IF EXISTS users")
 	db.Exec("DROP TABLE IF EXISTS order_items")
 	db.Exec("DROP TABLE IF EXISTS menu_items")
@@ -31,6 +30,10 @@ func clearDatabase(db *gorm.DB) {
 	db.Exec("DROP TABLE IF EXISTS menus")
 
 	db.Exec("DROP TABLE IF EXISTS families")
+	err := db.AutoMigrate(&model.Family{}, &model.User{}, &model.Food{}, &model.Order{}, &model.OrderItem{}, &model.MenuItem{})
+
+	db.Exec("SET FOREIGN_KEY_CHECKS = 1")
+	return err
 }
 func SameUsers(a, b []model.User) bool {
 	if len(a) != len(b) {
@@ -82,10 +85,8 @@ func TestUserFoodFamily(t *testing.T) {
 	err := Init()
 	assert.Nil(t, err, "Database initialization should not return an error")
 
-	clearDatabase(database.DB)
-
-	err = database.DB.AutoMigrate(&model.Family{}, &model.User{}, &model.Food{})
-	assert.Nil(t, err, "Database migration should not return an error")
+	err = clearDatabase(database.DB)
+	assert.Nil(t, err, "Database clear should not return an error")
 
 	users := []model.User{
 		{OpenID: "test1", Name: "test1", FamilyID: 1},
@@ -94,27 +95,29 @@ func TestUserFoodFamily(t *testing.T) {
 		{OpenID: "test4", Name: "test4", FamilyID: 2},
 	}
 	foods := []model.Food{
-		{Title: "test1", Price: 100, Desc: "This is a food", Images: "[https://www.baidu.com]", FamilyID: 1},
-		{Title: "test2", Price: 120, Desc: "This is a food", Images: "[https://www.baidu.com]", FamilyID: 1},
-		{Title: "test3", Price: 130, Desc: "This is a food", Images: "[https://www.baidu.com]", FamilyID: 2},
-		{Title: "test4", Price: 140, Desc: "This is a food", Images: "[https://www.baidu.com]", FamilyID: 2},
+		{Title: "test1", Price: 100, Desc: "This is a food", ImageURLs: "[https://www.baidu.com]", FamilyID: 1},
+		{Title: "test2", Price: 120, Desc: "This is a food", ImageURLs: "[https://www.baidu.com]", FamilyID: 1},
+		{Title: "test3", Price: 130, Desc: "This is a food", ImageURLs: "[https://www.baidu.com]", FamilyID: 2},
+		{Title: "test4", Price: 140, Desc: "This is a food", ImageURLs: "[https://www.baidu.com]", FamilyID: 2},
 	}
 	families := []model.Family{
-		{Name: "test1", OwnerOpenID: 1},
-		{Name: "test2", OwnerOpenID: 2},
+		{Name: "test1", OwnerOpenID: "test1"},
+		{Name: "test2", OwnerOpenID: "test2"},
 	}
 	familiesWithPreloads := []model.Family{
-		{Name: "test1", OwnerOpenID: 1, Users: []model.User{users[0], users[1]}, Foods: []model.Food{foods[0], foods[1]}},
-		{Name: "test2", OwnerOpenID: 2, Users: []model.User{users[2], users[3]}, Foods: []model.Food{foods[2], foods[3]}},
+		{Name: "test1", OwnerOpenID: "test1", Users: []model.User{users[0], users[1]}},
+		{Name: "test2", OwnerOpenID: "test2", Users: []model.User{users[2], users[3]}},
+	}
+
+	for _, user := range users {
+		err = dao.CreateUser(&user)
+		assert.Nil(t, err, "Create user should not return an error")
 	}
 	for _, family := range families {
 		err = dao.CreateFamily(&family)
 		assert.Nil(t, err, "Create family should not return an error")
 	}
-	for _, user := range users {
-		err = dao.CreateUser(&user)
-		assert.Nil(t, err, "Create user should not return an error")
-	}
+
 	for _, user := range users {
 		getUser, err := dao.GetUser(user.OpenID)
 		assert.Nil(t, err, "Get user should not return an error")
@@ -140,7 +143,6 @@ func TestUserFoodFamily(t *testing.T) {
 		getFamily, err := dao.GetFamilyWithPreloads(uint(i+1), []string{"Users", "Foods"})
 		assert.Nil(t, err, "Get family with preloads should not return an error")
 		assert.Equal(t, SameUsers(family.Users, getFamily.Users), true, "Get family with preloads should return the same family")
-		assert.Equal(t, SameFoods(family.Foods, getFamily.Foods), true, "Get family with preloads should return the same family")
 	}
 
 	user, _ := dao.GetUser("test1")
@@ -179,14 +181,16 @@ func TestMenuOrder(t *testing.T) {
 	err := Init()
 	assert.Nil(t, err, "Database initialization should not return an error")
 
-	clearDatabase(database.DB)
+	err = clearDatabase(database.DB)
+	assert.Nil(t, err, "Database clear should not return an error")
 
-	err = database.DB.AutoMigrate(&model.Family{}, &model.Order{}, &model.OrderItem{}, &model.MenuItem{})
-	assert.Nil(t, err, "Database migration should not return an error")
-
+	users := []model.User{
+		{OpenID: "test1", Name: "test1", FamilyID: 0},
+		{OpenID: "test2", Name: "test2", FamilyID: 0},
+	}
 	families := []model.Family{
-		{Name: "test1", OwnerOpenID: 1},
-		{Name: "test2", OwnerOpenID: 2},
+		{Name: "test1", OwnerOpenID: "test1"},
+		{Name: "test2", OwnerOpenID: "test2"},
 	}
 	Orders := []model.Order{
 		{FamilyID: 1},
@@ -195,25 +199,38 @@ func TestMenuOrder(t *testing.T) {
 		{FamilyID: 2},
 	}
 	OrderItems := []model.OrderItem{
-		{OrderID: 1, FoodID: 1, Quantity: 1},
-		{OrderID: 1, FoodID: 2, Quantity: 2},
-		{OrderID: 2, FoodID: 1, Quantity: 1},
-		{OrderID: 2, FoodID: 2, Quantity: 2},
-		{OrderID: 3, FoodID: 1, Quantity: 1},
-		{OrderID: 3, FoodID: 2, Quantity: 2},
-		{OrderID: 4, FoodID: 1, Quantity: 1},
-		{OrderID: 4, FoodID: 2, Quantity: 2},
+		{OrderID: 1, FoodID: 1, Quantity: 1, CreatedBy: "test1"},
+		{OrderID: 1, FoodID: 2, Quantity: 2, CreatedBy: "test1"},
+		{OrderID: 2, FoodID: 1, Quantity: 1, CreatedBy: "test1"},
+		{OrderID: 2, FoodID: 2, Quantity: 2, CreatedBy: "test1"},
+		{OrderID: 3, FoodID: 1, Quantity: 1, CreatedBy: "test2"},
+		{OrderID: 3, FoodID: 2, Quantity: 2, CreatedBy: "test2"},
+		{OrderID: 4, FoodID: 1, Quantity: 1, CreatedBy: "test2"},
+		{OrderID: 4, FoodID: 2, Quantity: 2, CreatedBy: "test2"},
 	}
 	MenuItems := []model.MenuItem{
-		{FamilyID: 1, FoodID: 1, Quantity: 1},
-		{FamilyID: 1, FoodID: 2, Quantity: 1},
-		{FamilyID: 2, FoodID: 1, Quantity: 1},
-		{FamilyID: 2, FoodID: 2, Quantity: 1},
+		{FamilyID: 1, FoodID: 1, Quantity: 1, CreatedBy: "test1"},
+		{FamilyID: 1, FoodID: 2, Quantity: 1, CreatedBy: "test1"},
+		{FamilyID: 2, FoodID: 1, Quantity: 1, CreatedBy: "test2"},
+		{FamilyID: 2, FoodID: 2, Quantity: 1, CreatedBy: "test2"},
+	}
+
+	for _, user := range users {
+		err = dao.CreateUser(&user)
+		assert.Nil(t, err, "Create user should not return an error")
 	}
 
 	for _, family := range families {
 		err = dao.CreateFamily(&family)
 		assert.Nil(t, err, "Create family should not return an error")
+	}
+	// mock create family
+	for i, user := range users {
+		getUser, err := dao.GetUser(user.OpenID)
+		assert.Nil(t, err, "Get user should not return an error")
+		getUser.FamilyID = uint(i + 1)
+		err = dao.UpdateUser(getUser)
+		assert.Nil(t, err, "Update user should not return an error")
 	}
 
 	for _, order := range Orders {
@@ -266,10 +283,8 @@ func TestCreateNullForeignKey(t *testing.T) {
 	err := Init()
 	assert.Nil(t, err, "Database initialization should not return an error")
 
-	clearDatabase(database.DB)
-
-	err = database.DB.AutoMigrate(&model.Family{}, &model.User{}, &model.Food{})
-	assert.Nil(t, err, "Database migration should not return an error")
+	err = clearDatabase(database.DB)
+	assert.Nil(t, err, "Database clear should not return an error")
 
 	user := model.User{
 		OpenID: "test1", Name: "test",

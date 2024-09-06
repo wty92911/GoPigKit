@@ -35,3 +35,4 @@ dist/*
 *.tar.gz
 
 configs/config.yaml
+configs/config.test.yaml
