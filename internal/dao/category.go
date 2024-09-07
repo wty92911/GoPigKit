@@ -3,11 +3,12 @@ package dao
 import (
 	"github.com/wty92911/GoPigKit/internal/database"
 	"github.com/wty92911/GoPigKit/internal/model"
+	"gorm.io/gorm"
 )
 
 // CreateCategory 创建分类
-func CreateCategory(category *model.Category) error {
-	return database.DB.Create(category).Error
+func CreateCategory(tx *gorm.DB, category *model.Category) error {
+	return tx.Create(category).Error
 }
 
 // UpdateCategory 更新分类
@@ -16,8 +17,8 @@ func UpdateCategory(category *model.Category) error {
 }
 
 // DeleteCategory 根据id删除分类
-func DeleteCategory(id uint) error {
-	return database.DB.Delete(&model.Category{}, id).Error
+func DeleteCategory(tx *gorm.DB, id uint) error {
+	return tx.Delete(&model.Category{}, id).Error
 }
 
 // GetCategories 根据familyID获取分类列表，按照ID升序
@@ -27,4 +28,11 @@ func GetCategories(familyID uint) ([]model.Category, error) {
 		return nil, err
 	}
 	return categories, nil
+}
+
+// GetCategory 根据id获取分类
+func GetCategory(id uint) (*model.Category, error) {
+	var category model.Category
+	err := database.DB.First(&category, id).Error
+	return &category, err
 }

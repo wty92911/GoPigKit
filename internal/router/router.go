@@ -44,8 +44,8 @@ func Init(r *gin.Engine, c *controller.Controller) {
 		}
 		authFamily.Use(middleware.AuthFamily(true))
 		{
-			auth.POST("/category")
-			auth.DELETE("/category")
+			auth.POST("/category", c.CreateCategory)
+			auth.DELETE("/category", c.DeleteCategory)
 
 			auth.DELETE("/family")
 			auth.DELETE("/food")

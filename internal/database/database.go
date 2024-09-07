@@ -11,7 +11,8 @@ import (
 )
 
 var DB *gorm.DB
-var MinioClient *minio.Client
+var MinIOClient *minio.Client
+var MinIOBucket string
 
 func Init(config *configs.DatabaseConfig) error {
 	var err error
@@ -29,14 +30,14 @@ func Init(config *configs.DatabaseConfig) error {
 	}
 
 	// Init Minio
-	MinioClient, err = minio.New(config.MinIO.Endpoint, &minio.Options{
+	MinIOClient, err = minio.New(config.MinIO.Endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(config.MinIO.AccessKey, config.MinIO.SecretKey, ""),
 		Secure: false,
 	})
 	if err != nil {
 		return err
 	}
-
+	MinIOBucket = config.MinIO.Bucket
 	//err = DB.AutoMigrate(
 	//	&model.Family{},
 	//	&model.User{},
