@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/wty92911/GoPigKit/internal/model"
 	"github.com/wty92911/GoPigKit/internal/service"
 	"net/http"
 	"strconv"
@@ -67,7 +68,9 @@ func (ctl *Controller) CreateFamily(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "openID not exist"})
 		return
 	}
-	family, err := service.CreateFamily(openID.(string), c.Query("name"))
+	var family *model.Family
+	var err error
+	family, err = service.CreateFamily(openID.(string), c.Query("name"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
