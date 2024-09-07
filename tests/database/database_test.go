@@ -24,9 +24,7 @@ func clearDatabase(db *gorm.DB) {
 	db.Exec("DROP TABLE IF EXISTS families")
 }
 func TestDatabaseInit(t *testing.T) {
-	// 使用 SQLite 内存数据库进行测试，避免修改实际数据库
 	var err error
-	//database.DB, err = gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 	config := configs.NewConfig()
 	err = config.Update("../../configs/config.yaml")
 	if err != nil {
@@ -54,7 +52,7 @@ func TestDatabaseInit(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	info, err := database.MinioClient.PutObject(
+	info, err := database.MinIOClient.PutObject(
 		context.Background(),
 		config.Database.MinIO.Bucket,
 		"images/category/piggy.png",
@@ -66,4 +64,26 @@ func TestDatabaseInit(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Log(info)
+}
+
+// 测试重复删除的图片
+func TestDupDeleteObj(t *testing.T) {
+	var err error
+	config := configs.NewConfig()
+	err = config.Update("../../configs/config.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = database.Init(config.Database)
+	assert.Nil(t, err, "Database initialization should not return an error")
+
+	err = database.MinIOClient.RemoveObject(
+		context.Background(),
+		config.Database.MinIO.Bucket,
+		"images/category/piggy1.png",
+		minio.RemoveObjectOptions{ForceDelete: true},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
 }
