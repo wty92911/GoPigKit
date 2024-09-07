@@ -47,6 +47,8 @@ definitions:
         items:
           $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Order'
         type: array
+      owner:
+        $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.User'
       owner_open_id:
         type: string
       updatedAt:
@@ -63,9 +65,10 @@ definitions:
       category_id:
         description: 食品分类ID，外键
         type: integer
-      createdAt:
+      created_by:
+        description: 创建者
         type: string
-      createdBy:
+      createdAt:
         type: string
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
@@ -128,7 +131,8 @@ definitions:
     type: object
   github_com_wty92911_GoPigKit_internal_model.OrderItem:
     properties:
-      createdBy:
+      created_by:
+        description: 创建者
         type: string
       food_id:
         description: 食品ID
@@ -147,7 +151,6 @@ definitions:
       avatar_url:
         type: string
       created_at:
-        description: Role      string         `json:"role" validate:"oneof=owner member"`
         type: string
       deleted_at:
         $ref: '#/definitions/gorm.DeletedAt'
@@ -199,6 +202,72 @@ info:
   title: API
   version: "1.0"
 paths:
+  /api/v1/categories:
+    get:
+      description: 获取所有分类的列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Category'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获得所有分类
+      tags:
+      - category
+  /api/v1/category:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 创建分类,包括分类的三级名称、图片，返回创建好的分类+图片链接
+      parameters:
+      - description: 家庭ID
+        in: formData
+        name: family_id
+        required: true
+        type: integer
+      - description: 顶级分类名称
+        in: formData
+        name: top_name
+        required: true
+        type: string
+      - description: 中间分类名称
+        in: formData
+        name: mid_name
+        required: true
+        type: string
+      - description: 分类名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: 分类图片
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Category'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 创建分类
+      tags:
+      - category
   /api/v1/family:
     get:
       description: 获取所有家庭的列表

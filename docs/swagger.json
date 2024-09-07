@@ -17,6 +17,103 @@
     "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
+        "/api/v1/categories": {
+            "get": {
+                "description": "获取所有分类的列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "获得所有分类",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.Category"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/category": {
+            "post": {
+                "description": "创建分类,包括分类的三级名称、图片，返回创建好的分类+图片链接",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "创建分类",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "家庭ID",
+                        "name": "family_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "顶级分类名称",
+                        "name": "top_name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "中间分类名称",
+                        "name": "mid_name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "分类名称",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "分类图片",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.Category"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/family": {
             "get": {
                 "description": "获取所有家庭的列表",
@@ -290,6 +387,9 @@
                         "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.Order"
                     }
                 },
+                "owner": {
+                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.User"
+                },
                 "owner_open_id": {
                     "type": "string"
                 },
@@ -314,7 +414,8 @@
                 "createdAt": {
                     "type": "string"
                 },
-                "createdBy": {
+                "created_by": {
+                    "description": "创建者",
                     "type": "string"
                 },
                 "deletedAt": {
@@ -405,7 +506,8 @@
         "github_com_wty92911_GoPigKit_internal_model.OrderItem": {
             "type": "object",
             "properties": {
-                "createdBy": {
+                "created_by": {
+                    "description": "创建者",
                     "type": "string"
                 },
                 "food_id": {
@@ -435,7 +537,6 @@
                     "type": "string"
                 },
                 "created_at": {
-                    "description": "Role      string         `json:\"role\" validate:\"oneof=owner member\"`",
                     "type": "string"
                 },
                 "deleted_at": {
