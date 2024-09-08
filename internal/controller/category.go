@@ -70,7 +70,7 @@ func (ctl *Controller) CreateCategory(c *gin.Context) {
 // @Param id path int true "分类ID"
 // @Success 200 {object} {"message": "success"}
 // @Failure 500 {object} {"error": "error message"}
-// @Router /api/v1/category/{id} [delete]
+// @Router /api/v1/category/:id [delete]
 func (ctl *Controller) DeleteCategory(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	err := service.DeleteCategory(uint(id))
