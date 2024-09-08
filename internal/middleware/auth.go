@@ -56,17 +56,17 @@ func AuthFamily(mustOwner bool) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		if user.FamilyID == 0 {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "User not in family"})
+		if user.FamilyID == nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "CreatedUser not in family"})
 			c.Abort()
 			return
 		}
 
 		if mustOwner {
-			family, err := dao.GetFamily(user.FamilyID)
-			if err != nil || family.OwnerOpenID != user.OpenID {
+			family, err := dao.GetFamily(*user.FamilyID)
+			if err != nil || *family.OwnerOpenID != user.OpenID {
 				c.JSON(http.StatusUnauthorized, gin.H{
-					"error": fmt.Sprintf("User is not owner of family %d", family.ID),
+					"error": fmt.Sprintf("CreatedUser is not owner of family %d", family.ID),
 				})
 				c.Abort()
 				return

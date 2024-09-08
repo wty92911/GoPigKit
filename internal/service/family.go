@@ -24,18 +24,18 @@ func CreateFamily(openID string, name string) (*model.Family, error) {
 	if err != nil {
 		return nil, err
 	}
-	if user.FamilyID != 0 {
+	if user.FamilyID != nil {
 		return nil, fmt.Errorf("user already in family %d", user.FamilyID)
 	}
 	family := &model.Family{
 		Name:        name,
-		OwnerOpenID: openID,
+		OwnerOpenID: &openID,
 	}
 	err = dao.CreateFamily(family)
 	if err != nil {
 		return nil, err
 	}
-	user.FamilyID = family.ID
+	user.FamilyID = &family.ID
 	err = dao.UpdateUser(user)
 	if err != nil {
 		return nil, err
@@ -49,14 +49,14 @@ func JoinFamily(id uint, openID string) (*model.Family, error) {
 	if err != nil {
 		return nil, err
 	}
-	if user.FamilyID != 0 {
+	if user.FamilyID != nil {
 		return nil, fmt.Errorf("user already in family %d", user.FamilyID)
 	}
 	family, err := dao.GetFamily(id)
 	if err != nil {
 		return nil, err
 	}
-	user.FamilyID = id
+	user.FamilyID = &family.ID
 	err = dao.UpdateUser(user)
 	if err != nil {
 		return nil, err

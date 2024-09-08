@@ -29,15 +29,6 @@ func DeleteFood(id uint) error {
 	return database.DB.Delete(&model.Food{}, id).Error
 }
 
-//// ListFoods 获取所有食品
-//func ListFoods() ([]model.Food, error) {
-//	var foods []model.Food
-//	if err := database.DB.Find(&foods).Error; err != nil {
-//		return nil, err
-//	}
-//	return foods, nil
-//}
-
 // GetFoodsByFamilyID 根据FamilyID获取食品
 func GetFoodsByFamilyID(familyID uint) ([]model.Food, error) {
 	var foods []model.Food

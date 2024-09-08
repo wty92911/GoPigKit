@@ -36,3 +36,17 @@ func GetCategory(id uint) (*model.Category, error) {
 	err := database.DB.First(&category, id).Error
 	return &category, err
 }
+
+// GetCategoryWithPreloads 根据id获取分类，预加载
+func GetCategoryWithPreloads(id uint, preloads []string) (*model.Category, error) {
+	var category model.Category
+	db := database.DB
+	// 预加载关联关系
+	for _, preload := range preloads {
+		db = db.Preload(preload)
+	}
+	if err := db.First(&category, id).Error; err != nil {
+		return nil, err
+	}
+	return &category, nil
+}
