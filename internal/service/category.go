@@ -30,7 +30,7 @@ func CreateCategory(familyID uint, topName, midName, name string, fileHeader *mu
 		fileHeader.Filename)
 	// 创建分类模型
 	category := &model.Category{
-		FamilyID: familyID,
+		FamilyID: &familyID,
 		TopName:  topName,
 		MidName:  midName,
 		Name:     name,

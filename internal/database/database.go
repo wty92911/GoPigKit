@@ -38,13 +38,5 @@ func Init(config *configs.DatabaseConfig) error {
 		return err
 	}
 	MinIOBucket = config.MinIO.Bucket
-	//err = DB.AutoMigrate(
-	//	&model.Family{},
-	//	&model.User{},
-	//	&model.Food{},
-	//
-	//	&model.Order{},
-	//	&model.OrderItem{},
-	//)
 	return err
 }

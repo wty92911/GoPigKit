@@ -394,7 +394,7 @@ const docTemplate = `{
                     }
                 },
                 "owner": {
-                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.User"
+                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.CreatedUser"
                 },
                 "owner_open_id": {
                     "type": "string"
@@ -405,7 +405,7 @@ const docTemplate = `{
                 "users": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.User"
+                        "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.CreatedUser"
                     }
                 }
             }
@@ -454,7 +454,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.User"
+                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.CreatedUser"
                 }
             }
         },
@@ -477,7 +477,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "user": {
-                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.User"
+                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.CreatedUser"
                 }
             }
         },
@@ -529,11 +529,11 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "user": {
-                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.User"
+                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.CreatedUser"
                 }
             }
         },
-        "github_com_wty92911_GoPigKit_internal_model.User": {
+        "github_com_wty92911_GoPigKit_internal_model.CreatedUser": {
             "type": "object",
             "required": [
                 "name"
