@@ -2,6 +2,7 @@ package model
 
 import (
 	"gorm.io/gorm"
+	"mime/multipart"
 )
 
 type Category struct {
@@ -13,4 +14,12 @@ type Category struct {
 	ImageURL string `json:"image_url"`
 
 	Foods []*Food `gorm:"foreignKey:CategoryID" json:"foods"`
+}
+
+type CreateCategoryRequest struct {
+	FamilyID uint                  `form:"family_id" binding:"required"`
+	TopName  string                `form:"top_name" binding:"required"`
+	MidName  string                `form:"mid_name" binding:"required"`
+	Name     string                `form:"name" binding:"required"`
+	Image    *multipart.FileHeader `form:"image" binding:"required"`
 }

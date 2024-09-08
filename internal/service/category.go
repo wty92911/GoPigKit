@@ -14,8 +14,7 @@ const categoryImagePrefix = "images/category"
 
 // GetCategories 获取分类列表
 func GetCategories(familyID uint) ([]model.Category, error) {
-	categories, err := dao.GetCategories(familyID)
-	return categories, err
+	return dao.GetCategories(familyID)
 }
 
 // CreateCategory 创建分类
