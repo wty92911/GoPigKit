@@ -37,3 +37,10 @@ func GetFoodsByFamilyID(familyID uint) ([]model.Food, error) {
 	}
 	return foods, nil
 }
+
+// GetFoodsByCategoryID 根据CategoryID获取食品
+func GetFoodsByCategoryID(categoryID uint) ([]*model.Food, error) {
+	var foods []*model.Food
+	err := database.DB.Where("category_id = ?", categoryID).Find(&foods).Error
+	return foods, err
+}
