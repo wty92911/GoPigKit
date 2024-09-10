@@ -24,7 +24,7 @@ func Init(r *gin.Engine, c *controller.Controller) {
 	{
 		auth.GET("/family", c.GetAllFamilies)
 		auth.POST("/family/create", c.CreateFamily)
-		auth.POST("/family/join", c.JoinFamily)
+		auth.POST("/family/join/:id", c.JoinFamily)
 
 		auth.GET("/user")
 		auth.POST("/user")
@@ -32,9 +32,12 @@ func Init(r *gin.Engine, c *controller.Controller) {
 		authFamily := auth.Group("")
 		authFamily.Use(middleware.AuthFamily(false))
 		{
+			// 上传文件、图片，要求必须是某个家庭成员
+			auth.GET("/upload", c.UploadFile)
+
 			auth.GET("/categories", c.GetCategories)
-			auth.GET("/food")
-			auth.POST("/food")
+			auth.GET("/foods", c.GetFoodsByCategory)
+			auth.POST("/food", c.CreateFood)
 
 			auth.GET("/menu")
 			auth.POST("/menu")
@@ -45,7 +48,7 @@ func Init(r *gin.Engine, c *controller.Controller) {
 		authFamily.Use(middleware.AuthFamily(true))
 		{
 			auth.POST("/category", c.CreateCategory)
-			auth.DELETE("/category", c.DeleteCategory)
+			auth.DELETE("/category/:id", c.DeleteCategory)
 
 			auth.DELETE("/family")
 			auth.DELETE("/food")

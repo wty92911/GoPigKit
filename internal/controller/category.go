@@ -33,25 +33,23 @@ func (ctl *Controller) GetCategories(c *gin.Context) {
 // @Tags category
 // @Accept multipart/form-data
 // @Produce json
-// @Param family_id formData uint true "家庭ID"
-// @Param top_name formData string true "顶级分类名称"
-// @Param mid_name formData string true "中间分类名称"
-// @Param name formData string true "分类名称"
-// @Param file formData file true "分类图片"
+// @Param family_id body uint true "家庭ID"
+// @Param top_name body string true "顶级分类名称"
+// @Param mid_name body string true "中间分类名称"
+// @Param name body string true "分类名称"
+// @Param image_url body string true "图片链接"
 // @Success 200 {object} {"data": model.Category}
 // @Failure 400 {object} {"error": error}
 // @Failure 500 {object} {"error": error}
 // @Router /api/v1/category [post]
 func (ctl *Controller) CreateCategory(c *gin.Context) {
-	var req model.CreateCategoryRequest
+	var req *model.Category
 	// 绑定并验证请求参数
 	if err := c.ShouldBind(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var category *model.Category
-	var err error
-	category, err = service.CreateCategory(req.FamilyID, req.TopName, req.MidName, req.Name, req.Image)
+	category, err := service.CreateCategory(req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
