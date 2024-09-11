@@ -13,8 +13,8 @@ import (
 // @Description 获取所有家庭的列表
 // @Tags family
 // @Produce json
-// @Success 200 {array} model.Family
-// @Failure 500 {object} map[string]interface{}
+// @Success 200 {array} []model.Family
+// @Failure 500 {object} error
 // @Router /api/v1/family [get]
 func (ctl *Controller) GetAllFamilies(c *gin.Context) {
 	families, err := service.GetAllFamilies()
@@ -33,7 +33,7 @@ func (ctl *Controller) GetAllFamilies(c *gin.Context) {
 // @Param id query int true "家庭ID"
 // @Param preloads query []string false "预加载项"
 // @Success 200 {object} model.Family
-// @Failure 500 {object} map[string]interface{}
+// @Failure 500 {object} error
 // @Router /api/v1/family/details [get]
 func (ctl *Controller) GetFamilyWithPreloads(c *gin.Context) {
 	id := c.Query("id")
@@ -60,12 +60,13 @@ func (ctl *Controller) GetFamilyWithPreloads(c *gin.Context) {
 // @Produce json
 // @Param name query string true "家庭名称"
 // @Success 200 {object} model.Family
-// @Failure 500 {object} map[string]interface{}
+// @Failure 400 {object} ErrMsg
+// @Failure 500 {object} error
 // @Router /api/v1/family/create [post]
 func (ctl *Controller) CreateFamily(c *gin.Context) {
 	openID, exist := c.Get("openID")
 	if !exist {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "openID not exist"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": OpenIDRequired})
 		return
 	}
 	var family *model.Family
@@ -85,14 +86,15 @@ func (ctl *Controller) CreateFamily(c *gin.Context) {
 // @Produce json
 // @Param id query int true "家庭ID"
 // @Success 200 {object} model.Family
-// @Failure 500 {object} map[string]interface{}
+// @Failure 400 {object} ErrMsg
+// @Failure 500 {object} error
 // @Router /api/v1/family/join [post]
 func (ctl *Controller) JoinFamily(c *gin.Context) {
 	id := c.Query("id")
 	familyID, _ := strconv.Atoi(id)
 	openID, exist := c.Get("openID")
 	if !exist {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "openID not exist"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": OpenIDRequired})
 		return
 	}
 	family, err := service.JoinFamily(uint(familyID), openID.(string))

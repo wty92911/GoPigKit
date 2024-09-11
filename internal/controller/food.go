@@ -14,8 +14,8 @@ import (
 // @Tags food
 // @Produce json
 // @Param category_id query int true "分类ID"
-// @Success 200 {array} {"data": []model.Food}
-// @Failure 500 {object} {"error": error}
+// @Success 200 {array} []model.Food
+// @Failure 500 {object} error
 // @Router /api/v1/foods [get]
 func (ctl *Controller) GetFoodsByCategory(c *gin.Context) {
 	categoryID, _ := strconv.Atoi(c.Query("category_id"))
@@ -35,10 +35,10 @@ func (ctl *Controller) GetFoodsByCategory(c *gin.Context) {
 // @Tags food
 // @Accept json
 // @Produce json
-// @Param food body model.CreateFoodRequest true "创建食品请求参数"
+// @Param food body model.Food true "创建食品请求参数"
 // @Success 200 {object} model.Food
-// @Failure 400 {object} map[string]interface{}{"error": "Invalid request"}
-// @Failure 500 {object} map[string]interface{}{"error": "Internal server error"}
+// @Failure 400 {object} error
+// @Failure 500 {object} error
 // @Router /api/v1/food [post]
 func (ctl *Controller) CreateFood(c *gin.Context) {
 	var req *model.Food

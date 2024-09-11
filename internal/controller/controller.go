@@ -12,6 +12,15 @@ type Controller struct {
 	Config *configs.Config
 }
 
+type ErrMsg string
+
+const (
+	InvalidParam       ErrMsg = "invalid param"
+	FileHeaderRequired        = "file header is required"
+	PathRequired              = "path is required"
+	OpenIDRequired            = "open id is required"
+)
+
 func NewController(config *configs.Config) *Controller {
 	return &Controller{
 		Config: config,

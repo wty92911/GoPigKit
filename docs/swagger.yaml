@@ -24,6 +24,12 @@ definitions:
         type: string
       updatedAt:
         type: string
+    required:
+    - family_id
+    - image_url
+    - mid_name
+    - name
+    - top_name
     type: object
   github_com_wty92911_GoPigKit_internal_model.Family:
     properties:
@@ -70,19 +76,20 @@ definitions:
         type: string
       createdAt:
         type: string
+      createdUser:
+        $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.User'
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
       desc:
         description: 食品描述
         type: string
-      family_id:
-        description: 家庭ID，外键
-        type: integer
       id:
         type: integer
       image_urls:
         description: 食品图片
-        type: string
+        items:
+          type: integer
+        type: array
       price:
         description: 食品价格
         type: integer
@@ -91,8 +98,12 @@ definitions:
         type: string
       updatedAt:
         type: string
-      user:
-        $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.User'
+    required:
+    - category_id
+    - created_by
+    - image_urls
+    - price
+    - title
     type: object
   github_com_wty92911_GoPigKit_internal_model.MenuItem:
     properties:
@@ -132,7 +143,7 @@ definitions:
   github_com_wty92911_GoPigKit_internal_model.OrderItem:
     properties:
       created_by:
-        description: 创建者
+        description: 创建者，外键
         type: string
       food_id:
         description: 食品ID
@@ -155,6 +166,7 @@ definitions:
       deleted_at:
         $ref: '#/definitions/gorm.DeletedAt'
       family_id:
+        description: user创建时可以不指定family_id，等后面再加入一个家庭
         type: integer
       name:
         type: string
@@ -173,6 +185,12 @@ definitions:
         description: Valid is true if Time is not NULL
         type: boolean
     type: object
+  internal_controller.ErrMsg:
+    enum:
+    - invalid param
+    type: string
+    x-enum-varnames:
+    - InvalidParam
   internal_controller.UserInfo:
     properties:
       avatar_url:
@@ -205,6 +223,12 @@ paths:
   /api/v1/categories:
     get:
       description: 获取所有分类的列表
+      parameters:
+      - description: 家庭ID
+        in: query
+        name: family_id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -212,13 +236,13 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Category'
+              items:
+                $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Category'
+              type: array
             type: array
         "500":
           description: Internal Server Error
-          schema:
-            additionalProperties: true
-            type: object
+          schema: {}
       summary: 获得所有分类
       tags:
       - category
@@ -229,30 +253,35 @@ paths:
       description: 创建分类,包括分类的三级名称、图片，返回创建好的分类+图片链接
       parameters:
       - description: 家庭ID
-        in: formData
+        in: body
         name: family_id
         required: true
-        type: integer
+        schema:
+          type: integer
       - description: 顶级分类名称
-        in: formData
+        in: body
         name: top_name
         required: true
-        type: string
+        schema:
+          type: string
       - description: 中间分类名称
-        in: formData
+        in: body
         name: mid_name
         required: true
-        type: string
+        schema:
+          type: string
       - description: 分类名称
-        in: formData
+        in: body
         name: name
         required: true
-        type: string
-      - description: 分类图片
-        in: formData
-        name: file
+        schema:
+          type: string
+      - description: 图片链接
+        in: body
+        name: image_url
         required: true
-        type: file
+        schema:
+          type: string
       produces:
       - application/json
       responses:
@@ -260,12 +289,36 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Category'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: 创建分类
+      tags:
+      - category
+  /api/v1/category/{id}:
+    delete:
+      description: 根据删除分类
+      parameters:
+      - description: 分类ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
-      summary: 创建分类
+            $ref: '#/definitions/internal_controller.ErrMsg'
+      summary: 删除分类
       tags:
       - category
   /api/v1/family:
@@ -278,13 +331,13 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Family'
+              items:
+                $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Family'
+              type: array
             type: array
         "500":
           description: Internal Server Error
-          schema:
-            additionalProperties: true
-            type: object
+          schema: {}
       summary: 获得所有家庭
       tags:
       - family
@@ -304,11 +357,13 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Family'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_controller.ErrMsg'
         "500":
           description: Internal Server Error
-          schema:
-            additionalProperties: true
-            type: object
+          schema: {}
       summary: 创建家庭
       tags:
       - family
@@ -337,9 +392,7 @@ paths:
             $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Family'
         "500":
           description: Internal Server Error
-          schema:
-            additionalProperties: true
-            type: object
+          schema: {}
       summary: 获得家庭详细情况
       tags:
       - family
@@ -359,15 +412,71 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Family'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_controller.ErrMsg'
         "500":
           description: Internal Server Error
-          schema:
-            additionalProperties: true
-            type: object
+          schema: {}
       summary: 加入家庭
       tags:
       - family
-  /login:
+  /api/v1/food:
+    post:
+      consumes:
+      - application/json
+      description: 创建食品，返回创建好的食品
+      parameters:
+      - description: 创建食品请求参数
+        in: body
+        name: food
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Food'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Food'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: 创建食品
+      tags:
+      - food
+  /api/v1/foods:
+    get:
+      description: 根据分类ID获取食物列表
+      parameters:
+      - description: 分类ID
+        in: query
+        name: category_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Food'
+              type: array
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: 根据分类获取食物
+      tags:
+      - food
+  /api/v1/login:
     post:
       consumes:
       - application/json
@@ -383,21 +492,69 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: token
           schema:
-            additionalProperties: true
-            type: object
+            type: string
         "400":
           description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            additionalProperties: true
-            type: object
+          schema: {}
       summary: 后端绑定微信登陆, 返回token
       tags:
       - auth
+  /api/v1/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 上传文件
+      parameters:
+      - description: 上传文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: 文件路径
+        in: formData
+        name: path
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: url
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_controller.ErrMsg'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: 上传文件
+      tags:
+      - file
+  /api/v1/users:
+    get:
+      description: 获取所有用户的列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.User'
+              type: array
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: 获得所有用户
+      tags:
+      - user
 swagger: "2.0"

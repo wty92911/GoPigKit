@@ -14,14 +14,14 @@ import (
 // @Tags category
 // @Produce json
 // @Param family_id query uint true "家庭ID"
-// @Success 200 {array} {"data": []model.Category}
-// @Failure 500 {object} {"error": error}
+// @Success 200 {array} []model.Category
+// @Failure 500 {object} error
 // @Router /api/v1/categories [get]
 func (ctl *Controller) GetCategories(c *gin.Context) {
 	familyID, _ := strconv.Atoi(c.Query("family_id"))
 	categories, err := service.GetCategories(uint(familyID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, categories)
@@ -38,9 +38,9 @@ func (ctl *Controller) GetCategories(c *gin.Context) {
 // @Param mid_name body string true "中间分类名称"
 // @Param name body string true "分类名称"
 // @Param image_url body string true "图片链接"
-// @Success 200 {object} {"data": model.Category}
-// @Failure 400 {object} {"error": error}
-// @Failure 500 {object} {"error": error}
+// @Success 200 {object} model.Category
+// @Failure 400 {object} error
+// @Failure 500 {object} error
 // @Router /api/v1/category [post]
 func (ctl *Controller) CreateCategory(c *gin.Context) {
 	var req *model.Category
@@ -63,8 +63,8 @@ func (ctl *Controller) CreateCategory(c *gin.Context) {
 // @Tags category
 // @Produce json
 // @Param id path int true "分类ID"
-// @Success 200 {object} {"message": "success"}
-// @Failure 500 {object} {"error": error}
+// @Success 200 {string} string "success"
+// @Failure 500 {object} ErrMsg
 // @Router /api/v1/category/{id} [delete]
 func (ctl *Controller) DeleteCategory(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
@@ -73,5 +73,5 @@ func (ctl *Controller) DeleteCategory(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "success"})
+	c.JSON(http.StatusOK, "success")
 }

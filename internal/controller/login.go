@@ -28,10 +28,10 @@ type WeChatLoginRequest struct {
 // @Accept json
 // @Produce json
 // @Param req body WeChatLoginRequest true "微信登录请求"
-// @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} map[string]interface{}
-// @Failure 500 {object} map[string]interface{}
-// @Router /login [post]
+// @Success 200 {string} string "token"
+// @Failure 400 {object} error
+// @Failure 500 {object} error
+// @Router /api/v1/login [post]
 func (ctl *Controller) WeChatLogin(c *gin.Context) {
 	var req WeChatLoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -75,5 +75,5 @@ func (ctl *Controller) WeChatLogin(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+	c.JSON(http.StatusOK, tokenString)
 }

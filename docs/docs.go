@@ -33,22 +33,31 @@ const docTemplate = `{
                     "category"
                 ],
                 "summary": "获得所有分类",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "家庭ID",
+                        "name": "family_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.Category"
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.Category"
+                                }
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -68,39 +77,49 @@ const docTemplate = `{
                 "summary": "创建分类",
                 "parameters": [
                     {
-                        "type": "integer",
                         "description": "家庭ID",
                         "name": "family_id",
-                        "in": "formData",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
                     },
                     {
-                        "type": "string",
                         "description": "顶级分类名称",
                         "name": "top_name",
-                        "in": "formData",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
-                        "type": "string",
                         "description": "中间分类名称",
                         "name": "mid_name",
-                        "in": "formData",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
-                        "type": "string",
                         "description": "分类名称",
                         "name": "name",
-                        "in": "formData",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
-                        "type": "file",
-                        "description": "分类图片",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
+                        "description": "图片链接",
+                        "name": "image_url",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -110,11 +129,47 @@ const docTemplate = `{
                             "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.Category"
                         }
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/api/v1/category/{id}": {
+            "delete": {
+                "description": "根据删除分类",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "删除分类",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "分类ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/internal_controller.ErrMsg"
                         }
                     }
                 }
@@ -136,16 +191,16 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.Family"
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.Family"
+                                }
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -176,12 +231,15 @@ const docTemplate = `{
                             "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.Family"
                         }
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_controller.ErrMsg"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -224,10 +282,7 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -258,17 +313,101 @@ const docTemplate = `{
                             "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.Family"
                         }
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_controller.ErrMsg"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
+                        "schema": {}
                     }
                 }
             }
         },
-        "/login": {
+        "/api/v1/food": {
+            "post": {
+                "description": "创建食品，返回创建好的食品",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "food"
+                ],
+                "summary": "创建食品",
+                "parameters": [
+                    {
+                        "description": "创建食品请求参数",
+                        "name": "food",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.Food"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.Food"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/api/v1/foods": {
+            "get": {
+                "description": "根据分类ID获取食物列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "food"
+                ],
+                "summary": "根据分类获取食物",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "分类ID",
+                        "name": "category_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.Food"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/api/v1/login": {
             "post": {
                 "description": "用户使用微信登录，后端绑定微信账户并返回JWT token",
                 "consumes": [
@@ -294,25 +433,97 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "token",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/api/v1/upload": {
+            "post": {
+                "description": "上传文件",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "file"
+                ],
+                "summary": "上传文件",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "上传文件",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "文件路径",
+                        "name": "path",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "url",
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/internal_controller.ErrMsg"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/api/v1/users": {
+            "get": {
+                "description": "获取所有用户的列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "获得所有用户",
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.User"
+                                }
+                            }
                         }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
                     }
                 }
             }
@@ -321,6 +532,13 @@ const docTemplate = `{
     "definitions": {
         "github_com_wty92911_GoPigKit_internal_model.Category": {
             "type": "object",
+            "required": [
+                "family_id",
+                "image_url",
+                "mid_name",
+                "name",
+                "top_name"
+            ],
             "properties": {
                 "createdAt": {
                     "type": "string"
@@ -394,7 +612,7 @@ const docTemplate = `{
                     }
                 },
                 "owner": {
-                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.CreatedUser"
+                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.User"
                 },
                 "owner_open_id": {
                     "type": "string"
@@ -405,13 +623,20 @@ const docTemplate = `{
                 "users": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.CreatedUser"
+                        "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.User"
                     }
                 }
             }
         },
         "github_com_wty92911_GoPigKit_internal_model.Food": {
             "type": "object",
+            "required": [
+                "category_id",
+                "created_by",
+                "image_urls",
+                "price",
+                "title"
+            ],
             "properties": {
                 "category_id": {
                     "description": "食品分类ID，外键",
@@ -419,6 +644,9 @@ const docTemplate = `{
                 },
                 "createdAt": {
                     "type": "string"
+                },
+                "createdUser": {
+                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.User"
                 },
                 "created_by": {
                     "description": "创建者",
@@ -431,16 +659,15 @@ const docTemplate = `{
                     "description": "食品描述",
                     "type": "string"
                 },
-                "family_id": {
-                    "description": "家庭ID，外键",
-                    "type": "integer"
-                },
                 "id": {
                     "type": "integer"
                 },
                 "image_urls": {
                     "description": "食品图片",
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "price": {
                     "description": "食品价格",
@@ -452,9 +679,6 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
-                },
-                "user": {
-                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.CreatedUser"
                 }
             }
         },
@@ -477,7 +701,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "user": {
-                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.CreatedUser"
+                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.User"
                 }
             }
         },
@@ -513,7 +737,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "created_by": {
-                    "description": "创建者",
+                    "description": "创建者，外键",
                     "type": "string"
                 },
                 "food_id": {
@@ -529,11 +753,11 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "user": {
-                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.CreatedUser"
+                    "$ref": "#/definitions/github_com_wty92911_GoPigKit_internal_model.User"
                 }
             }
         },
-        "github_com_wty92911_GoPigKit_internal_model.CreatedUser": {
+        "github_com_wty92911_GoPigKit_internal_model.User": {
             "type": "object",
             "required": [
                 "name"
@@ -549,6 +773,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "family_id": {
+                    "description": "user创建时可以不指定family_id，等后面再加入一个家庭",
                     "type": "integer"
                 },
                 "name": {
@@ -573,6 +798,15 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
+        },
+        "internal_controller.ErrMsg": {
+            "type": "string",
+            "enum": [
+                "invalid param"
+            ],
+            "x-enum-varnames": [
+                "InvalidParam"
+            ]
         },
         "internal_controller.UserInfo": {
             "type": "object",
