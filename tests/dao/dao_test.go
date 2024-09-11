@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
@@ -96,7 +97,7 @@ func CompareFamilies(f1, f2 *model.Family) bool {
 	return cmp.Equal(*f1, *f2, opts...)
 
 }
-func TestUserFoodFamily(t *testing.T) {
+func TestAll(t *testing.T) {
 
 	err := Init()
 	assert.Nil(t, err, "Database initialization should not return an error")
@@ -112,7 +113,7 @@ func TestUserFoodFamily(t *testing.T) {
 	}
 	// create users
 	for i, user := range users {
-		err = dao.CreateUser(user)
+		err = dao.CreateUser(database.DB, user)
 		assert.Nil(t, err, "Create user should not return an error")
 		users[i], err = dao.GetUser(user.OpenID)
 		assert.Nil(t, err, "Get user should not return an error")
@@ -123,7 +124,7 @@ func TestUserFoodFamily(t *testing.T) {
 	}
 	// create families
 	for i, family := range families {
-		err = dao.CreateFamily(family)
+		err = dao.CreateFamily(database.DB, family)
 		assert.Nil(t, err, "Create family should not return an error")
 		families[i], err = dao.GetFamily(family.ID)
 		assert.Nil(t, err, "Get family should not return an error")
@@ -134,7 +135,7 @@ func TestUserFoodFamily(t *testing.T) {
 		family, err := dao.GetFamily(uint(i/2 + 1))
 		assert.Nil(t, err, "Get family should not return an error")
 		users[i].FamilyID = &family.ID
-		err = dao.UpdateUser(users[i])
+		err = dao.UpdateUser(database.DB, users[i])
 		assert.Nil(t, err, "Update user should not return an error")
 	}
 	categories := []*model.Category{
@@ -152,14 +153,14 @@ func TestUserFoodFamily(t *testing.T) {
 	}
 
 	foods := []*model.Food{
-		{Title: "test1", Price: 100, Desc: "This is a food", ImageURLs: `[https://www.baidu.com]`, CategoryID: &categories[0].ID, CreatedBy: &users[0].OpenID},
-		{Title: "test2", Price: 120, Desc: "This is a food", ImageURLs: `[https://www.baidu.com]`, CategoryID: &categories[0].ID, CreatedBy: &users[1].OpenID},
-		{Title: "test3", Price: 130, Desc: "This is a food", ImageURLs: `[https://www.baidu.com]`, CategoryID: &categories[2].ID, CreatedBy: &users[2].OpenID},
-		{Title: "test4", Price: 140, Desc: "This is a food", ImageURLs: `[https://www.baidu.com]`, CategoryID: &categories[2].ID, CreatedBy: &users[3].OpenID},
+		{Title: "test1", Price: 100, Desc: "This is a food", ImageURLs: json.RawMessage(`[https://www.baidu.com]`), CategoryID: &categories[0].ID, CreatedBy: &users[0].OpenID},
+		{Title: "test2", Price: 120, Desc: "This is a food", ImageURLs: json.RawMessage(`[https://www.baidu.com]`), CategoryID: &categories[0].ID, CreatedBy: &users[1].OpenID},
+		{Title: "test3", Price: 130, Desc: "This is a food", ImageURLs: json.RawMessage(`[https://www.baidu.com]`), CategoryID: &categories[2].ID, CreatedBy: &users[2].OpenID},
+		{Title: "test4", Price: 140, Desc: "This is a food", ImageURLs: json.RawMessage(`[https://www.baidu.com]`), CategoryID: &categories[2].ID, CreatedBy: &users[3].OpenID},
 	}
 	//create foods
 	for i, food := range foods {
-		err = dao.CreateFood(food)
+		err = dao.CreateFood(database.DB, food)
 		assert.Nil(t, err, "Create food should not return an error")
 		foods[i], err = dao.GetFood(food.ID)
 		assert.Nil(t, err, "Get food should not return an error")
@@ -186,7 +187,7 @@ func TestUserFoodFamily(t *testing.T) {
 		assert.True(t, CompareFamilies(family, getFamily), "Get family with preloads should return the same family")
 	}
 	for i := range foods {
-		err := dao.DeleteFood(uint(i + 1))
+		err := dao.DeleteFood(database.DB, uint(i+1))
 		assert.Nil(t, err, "Get food should not return an error")
 	}
 	for i := range categories {
@@ -198,15 +199,15 @@ func TestUserFoodFamily(t *testing.T) {
 		getUser, err := dao.GetUser(users[i].OpenID)
 		assert.Nil(t, err, "Get user should not return an error")
 		getUser.FamilyID = nil
-		err = dao.UpdateUser(getUser)
+		err = dao.UpdateUser(database.DB, getUser)
 		assert.Nil(t, err, "Update user should not return an error")
 	}
 	for i := range familiesWithPreloads {
-		err := dao.DeleteFamily(uint(i + 1))
+		err := dao.DeleteFamily(database.DB, uint(i+1))
 		assert.Nil(t, err, "Get family should not return an error")
 	}
 	for i := range users {
-		err := dao.DeleteUser(users[i].OpenID)
+		err := dao.DeleteUser(database.DB, users[i].OpenID)
 		assert.Nil(t, err, "Get user should not return an error")
 	}
 }
@@ -221,7 +222,7 @@ func TestCreateNullForeignKey(t *testing.T) {
 	user := model.User{
 		OpenID: "test1", Name: "test",
 	}
-	err = dao.CreateUser(&user)
+	err = dao.CreateUser(database.DB, &user)
 	assert.Nil(t, err, "Create user should not return an error")
 
 	user1, _ := dao.GetUser("test1")
