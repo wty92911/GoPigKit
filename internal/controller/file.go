@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// UploadFile 上传文件
 func (ctl *Controller) UploadFile(c *gin.Context) {
 	var fileHeader *multipart.FileHeader
 	var err error
@@ -16,12 +17,6 @@ func (ctl *Controller) UploadFile(c *gin.Context) {
 		return
 	}
 
-	var file multipart.File
-	file, err = fileHeader.Open()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
 	var path string
 	var ok bool
 	if path, ok = c.GetPostForm("path"); !ok {
@@ -29,9 +24,10 @@ func (ctl *Controller) UploadFile(c *gin.Context) {
 		return
 	}
 
-	if path, err = service.UploadFile(file, path); err != nil {
+	var url string
+	if url, err = service.UploadFile(fileHeader, path); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, path)
+	c.JSON(http.StatusOK, url)
 }
