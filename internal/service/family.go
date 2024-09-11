@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"github.com/wty92911/GoPigKit/internal/dao"
+	"github.com/wty92911/GoPigKit/internal/database"
 	"github.com/wty92911/GoPigKit/internal/model"
 )
 
@@ -27,17 +28,27 @@ func CreateFamily(openID string, name string) (*model.Family, error) {
 	if user.FamilyID != nil {
 		return nil, fmt.Errorf("user already in family %d", user.FamilyID)
 	}
+
+	tx := database.DB.Begin()
 	family := &model.Family{
 		Name:        name,
 		OwnerOpenID: &openID,
 	}
-	err = dao.CreateFamily(family)
+	err = dao.CreateFamily(tx, family)
 	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
+
 	user.FamilyID = &family.ID
-	err = dao.UpdateUser(user)
+	err = dao.UpdateUser(tx, user)
 	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if err = tx.Commit().Error; err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 	return family, err
@@ -56,9 +67,16 @@ func JoinFamily(id uint, openID string) (*model.Family, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	tx := database.DB.Begin()
 	user.FamilyID = &family.ID
-	err = dao.UpdateUser(user)
+	err = dao.UpdateUser(tx, user)
 	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	if err = tx.Commit().Error; err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 	return family, err

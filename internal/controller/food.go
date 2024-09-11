@@ -41,7 +41,7 @@ func (ctl *Controller) GetFoodsByCategory(c *gin.Context) {
 // @Failure 500 {object} map[string]interface{}{"error": "Internal server error"}
 // @Router /api/v1/food [post]
 func (ctl *Controller) CreateFood(c *gin.Context) {
-	var req model.CreateFoodRequest
+	var req *model.Food
 
 	// 绑定并验证请求参数
 	if err := c.ShouldBindJSON(&req); err != nil {
