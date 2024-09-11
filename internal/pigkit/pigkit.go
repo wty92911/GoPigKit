@@ -17,6 +17,8 @@ const (
 )
 
 func Run() {
+	// 0. 初始化日志
+	log.Println("GoPigKit start")
 	// 1. 初始化Config
 	config := configs.NewConfig()
 	err := config.Update(configPath)
