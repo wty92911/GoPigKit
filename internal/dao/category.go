@@ -6,19 +6,11 @@ import (
 	"gorm.io/gorm"
 )
 
-// CreateCategory 创建分类
-func CreateCategory(tx *gorm.DB, category *model.Category) error {
-	return tx.Create(category).Error
-}
-
-// UpdateCategory 更新分类
-func UpdateCategory(category *model.Category) error {
-	return database.DB.Save(category).Error
-}
-
-// DeleteCategory 根据id删除分类
-func DeleteCategory(tx *gorm.DB, id uint) error {
-	return tx.Delete(&model.Category{}, id).Error
+// GetCategory 根据id获取分类
+func GetCategory(id uint) (*model.Category, error) {
+	var category model.Category
+	err := database.DB.First(&category, id).Error
+	return &category, err
 }
 
 // GetCategories 根据familyID获取分类列表，按照ID升序
@@ -28,13 +20,6 @@ func GetCategories(familyID uint) ([]model.Category, error) {
 		return nil, err
 	}
 	return categories, nil
-}
-
-// GetCategory 根据id获取分类
-func GetCategory(id uint) (*model.Category, error) {
-	var category model.Category
-	err := database.DB.First(&category, id).Error
-	return &category, err
 }
 
 // GetCategoryWithPreloads 根据id获取分类，预加载
@@ -49,4 +34,19 @@ func GetCategoryWithPreloads(id uint, preloads []string) (*model.Category, error
 		return nil, err
 	}
 	return &category, nil
+}
+
+// CreateCategory 创建分类
+func CreateCategory(tx *gorm.DB, category *model.Category) error {
+	return tx.Create(category).Error
+}
+
+// UpdateCategory 更新分类
+func UpdateCategory(tx *gorm.DB, category *model.Category) error {
+	return tx.Save(category).Error
+}
+
+// DeleteCategory 根据id删除分类
+func DeleteCategory(tx *gorm.DB, id uint) error {
+	return tx.Delete(&model.Category{}, id).Error
 }

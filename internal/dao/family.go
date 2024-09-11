@@ -3,6 +3,7 @@ package dao
 import (
 	"github.com/wty92911/GoPigKit/internal/database"
 	"github.com/wty92911/GoPigKit/internal/model"
+	"gorm.io/gorm"
 )
 
 // GetFamily 根据ID获取Family
@@ -38,16 +39,16 @@ func GetFamilyWithPreloads(id uint, preloads []string) (*model.Family, error) {
 }
 
 // CreateFamily 创建新的Family
-func CreateFamily(family *model.Family) error {
-	return database.DB.Create(family).Error
+func CreateFamily(tx *gorm.DB, family *model.Family) error {
+	return tx.Create(family).Error
 }
 
 // DeleteFamily 根据ID删除Family
-func DeleteFamily(id uint) error {
-	return database.DB.Delete(&model.Family{}, id).Error
+func DeleteFamily(tx *gorm.DB, id uint) error {
+	return tx.Delete(&model.Family{}, id).Error
 }
 
 // UpdateFamily 更新Family信息
-func UpdateFamily(family *model.Family) error {
-	return database.DB.Save(family).Error
+func UpdateFamily(tx *gorm.DB, family *model.Family) error {
+	return tx.Save(family).Error
 }

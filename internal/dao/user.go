@@ -3,6 +3,7 @@ package dao
 import (
 	"github.com/wty92911/GoPigKit/internal/database"
 	"github.com/wty92911/GoPigKit/internal/model"
+	"gorm.io/gorm"
 )
 
 // GetUser 根据 OpenID 获取用户
@@ -15,19 +16,19 @@ func GetUser(openID string) (*model.User, error) {
 }
 
 // CreateUser 创建新用户
-func CreateUser(user *model.User) error {
+func CreateUser(tx *gorm.DB, user *model.User) error {
 	//if user.FamilyID == 0 {
 	//	return database.DB.Omit("FamilyID").Create(user).Error
 	//}
-	return database.DB.Create(user).Error
+	return tx.Create(user).Error
 }
 
 // DeleteUser 通过openID删除用户
-func DeleteUser(openID string) error {
-	return database.DB.Delete(&model.User{OpenID: openID}).Error
+func DeleteUser(tx *gorm.DB, openID string) error {
+	return tx.Delete(&model.User{OpenID: openID}).Error
 }
 
 // UpdateUser 更新用户信息
-func UpdateUser(user *model.User) error {
-	return database.DB.Save(user).Error
+func UpdateUser(tx *gorm.DB, user *model.User) error {
+	return tx.Save(user).Error
 }
