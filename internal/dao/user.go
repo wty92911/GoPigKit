@@ -15,6 +15,15 @@ func GetUser(openID string) (*model.User, error) {
 	return &user, nil
 }
 
+// GetUsers 获取用户列表
+func GetUsers() ([]*model.User, error) {
+	var users []*model.User
+	if err := database.DB.Find(&users).Error; err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
 // CreateUser 创建新用户
 func CreateUser(tx *gorm.DB, user *model.User) error {
 	//if user.FamilyID == 0 {

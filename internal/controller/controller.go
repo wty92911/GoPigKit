@@ -18,6 +18,7 @@ const (
 	InvalidParam       ErrMsg = "invalid param"
 	FileHeaderRequired        = "file header is required"
 	PathRequired              = "path is required"
+	URLRequired               = "url is required"
 	OpenIDRequired            = "open id is required"
 )
 

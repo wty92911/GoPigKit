@@ -33,7 +33,8 @@ func Init(r *gin.Engine, c *controller.Controller) {
 		authFamily.Use(middleware.AuthFamily(false))
 		{
 			// 上传文件、图片，要求必须是某个家庭成员
-			auth.GET("/upload", c.UploadFile)
+			auth.GET("/upload_file", c.UploadFile)
+			auth.DELETE("/delete_file/:url", c.DeleteFile)
 
 			auth.GET("/categories", c.GetCategories)
 			auth.GET("/foods", c.GetFoodsByCategory)

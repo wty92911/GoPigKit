@@ -11,6 +11,11 @@ func GetUser(openID string) (*model.User, error) {
 	return dao.GetUser(openID)
 }
 
+// GetUsers 获取用户列表
+func GetUsers() ([]*model.User, error) {
+	return dao.GetUsers()
+}
+
 // CreateUser 创建用户
 func CreateUser(user *model.User) error {
 	tx := database.DB.Begin()

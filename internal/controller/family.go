@@ -13,8 +13,8 @@ import (
 // @Description 获取所有家庭的列表
 // @Tags family
 // @Produce json
-// @Success 200 {array} []model.Family
-// @Failure 500 {object} error
+// @Success 200 {object} gin.H{data=[]model.Family}
+// @Failure 500 {object} gin.H{error=string}
 // @Router /api/v1/family [get]
 func (ctl *Controller) GetAllFamilies(c *gin.Context) {
 	families, err := service.GetAllFamilies()
@@ -22,7 +22,7 @@ func (ctl *Controller) GetAllFamilies(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, families)
+	c.JSON(http.StatusOK, gin.H{"data": families})
 }
 
 // GetFamilyWithPreloads godoc
@@ -32,8 +32,8 @@ func (ctl *Controller) GetAllFamilies(c *gin.Context) {
 // @Produce json
 // @Param id query int true "家庭ID"
 // @Param preloads query []string false "预加载项"
-// @Success 200 {object} model.Family
-// @Failure 500 {object} error
+// @Success 200 {object} gin.H{data=model.Family}
+// @Failure 500 {object} gin.H{error=string}
 // @Router /api/v1/family/details [get]
 func (ctl *Controller) GetFamilyWithPreloads(c *gin.Context) {
 	id := c.Query("id")
@@ -50,7 +50,7 @@ func (ctl *Controller) GetFamilyWithPreloads(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, family)
+	c.JSON(http.StatusOK, gin.H{"data": family})
 }
 
 // CreateFamily godoc
@@ -59,9 +59,8 @@ func (ctl *Controller) GetFamilyWithPreloads(c *gin.Context) {
 // @Tags family
 // @Produce json
 // @Param name query string true "家庭名称"
-// @Success 200 {object} model.Family
-// @Failure 400 {object} ErrMsg
-// @Failure 500 {object} error
+// @Success 200 {object} gin.H{data=model.Family}
+// @Failure 400,500 {object} gin.H{error=string}
 // @Router /api/v1/family/create [post]
 func (ctl *Controller) CreateFamily(c *gin.Context) {
 	openID, exist := c.Get("openID")
@@ -76,7 +75,7 @@ func (ctl *Controller) CreateFamily(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, family)
+	c.JSON(http.StatusOK, gin.H{"data": family})
 }
 
 // JoinFamily godoc
@@ -85,9 +84,8 @@ func (ctl *Controller) CreateFamily(c *gin.Context) {
 // @Tags family
 // @Produce json
 // @Param id query int true "家庭ID"
-// @Success 200 {object} model.Family
-// @Failure 400 {object} ErrMsg
-// @Failure 500 {object} error
+// @Success 200 {object} gin.H{data=model.Family}
+// @Failure 400,500 {object} gin.H{error=string}
 // @Router /api/v1/family/join [post]
 func (ctl *Controller) JoinFamily(c *gin.Context) {
 	id := c.Query("id")
@@ -102,5 +100,5 @@ func (ctl *Controller) JoinFamily(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, family)
+	c.JSON(http.StatusOK, gin.H{"data": family})
 }

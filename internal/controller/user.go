@@ -12,20 +12,15 @@ import (
 // @Description 获取所有用户的列表
 // @Tags user
 // @Produce json
-// @Success 200 {array} []model.User
-// @Failure 500 {object} error
+// @Success 200 {object} gin.H{data=[]model.User}
+// @Failure 500 {object} gin.H{error=string}
 // @Router /api/v1/users [get]
 func (ctl *Controller) GetUsers(c *gin.Context) {
-	openID, exist := c.Get("openID")
-	if !exist {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": OpenIDRequired})
-		return
-	}
-	var user *model.User
+	var users []*model.User
 	var err error
-	if user, err = service.GetUser(openID.(string)); err != nil {
+	if users, err = service.GetUsers(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, gin.H{"data": users})
 }

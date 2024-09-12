@@ -14,8 +14,8 @@ import (
 // @Tags food
 // @Produce json
 // @Param category_id query int true "分类ID"
-// @Success 200 {array} []model.Food
-// @Failure 500 {object} error
+// @Success 200 {object} gin.H{data=[]model.Food}
+// @Failure 500 {object} gin.H{error=string}
 // @Router /api/v1/foods [get]
 func (ctl *Controller) GetFoodsByCategory(c *gin.Context) {
 	categoryID, _ := strconv.Atoi(c.Query("category_id"))
@@ -26,7 +26,7 @@ func (ctl *Controller) GetFoodsByCategory(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, foods)
+	c.JSON(http.StatusOK, gin.H{"data": foods})
 }
 
 // CreateFood godoc
@@ -36,13 +36,11 @@ func (ctl *Controller) GetFoodsByCategory(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param food body model.Food true "创建食品请求参数"
-// @Success 200 {object} model.Food
-// @Failure 400 {object} error
-// @Failure 500 {object} error
+// @Success 200 {object} gin.H{data=model.Food}
+// @Failure 400,500 {object} gin.H{error=string}
 // @Router /api/v1/food [post]
 func (ctl *Controller) CreateFood(c *gin.Context) {
 	var req *model.Food
-
 	// 绑定并验证请求参数
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -56,5 +54,5 @@ func (ctl *Controller) CreateFood(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, food)
+	c.JSON(http.StatusOK, gin.H{"data": food})
 }

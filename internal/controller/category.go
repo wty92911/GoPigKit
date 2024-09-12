@@ -14,8 +14,8 @@ import (
 // @Tags category
 // @Produce json
 // @Param family_id query uint true "家庭ID"
-// @Success 200 {array} []model.Category
-// @Failure 500 {object} error
+// @Success 200 {object} gin.H{data=[]model.Category}
+// @Failure 500 {object} gin.H{error=string}
 // @Router /api/v1/categories [get]
 func (ctl *Controller) GetCategories(c *gin.Context) {
 	familyID, _ := strconv.Atoi(c.Query("family_id"))
@@ -24,23 +24,22 @@ func (ctl *Controller) GetCategories(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, categories)
+	c.JSON(http.StatusOK, gin.H{"data": categories})
 }
 
 // CreateCategory godoc
 // @Summary 创建分类
 // @Description 创建分类,包括分类的三级名称、图片，返回创建好的分类+图片链接
 // @Tags category
-// @Accept multipart/form-data
+// @Accept json
 // @Produce json
 // @Param family_id body uint true "家庭ID"
 // @Param top_name body string true "顶级分类名称"
 // @Param mid_name body string true "中间分类名称"
 // @Param name body string true "分类名称"
 // @Param image_url body string true "图片链接"
-// @Success 200 {object} model.Category
-// @Failure 400 {object} error
-// @Failure 500 {object} error
+// @Success 200 {object} gin.H{data=model.Category}
+// @Failure 400,500 {object} gin.H{error=string}
 // @Router /api/v1/category [post]
 func (ctl *Controller) CreateCategory(c *gin.Context) {
 	var req *model.Category
@@ -54,17 +53,17 @@ func (ctl *Controller) CreateCategory(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, category)
+	c.JSON(http.StatusOK, gin.H{"data": category})
 }
 
 // DeleteCategory godoc
 // @Summary 删除分类
-// @Description 根据删除分类
+// @Description 根据分类ID删除分类
 // @Tags category
 // @Produce json
 // @Param id path int true "分类ID"
-// @Success 200 {string} string "success"
-// @Failure 500 {object} ErrMsg
+// @Success 200 {object} gin.H{error=string}
+// @Failure 500 {object} gin.H{message=string}
 // @Router /api/v1/category/{id} [delete]
 func (ctl *Controller) DeleteCategory(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
@@ -73,5 +72,5 @@ func (ctl *Controller) DeleteCategory(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, "success")
+	c.JSON(http.StatusOK, gin.H{"message": "success"})
 }

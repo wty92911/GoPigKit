@@ -36,7 +36,6 @@ func AuthToken(jwtSecret string) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
 		c.Next()
 	}
 }

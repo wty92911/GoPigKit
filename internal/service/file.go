@@ -7,10 +7,11 @@ import (
 	"github.com/wty92911/GoPigKit/internal/database"
 	"log"
 	"mime/multipart"
+	"strings"
 )
 
-// UploadFile 上传文件，返回文件真实路径
-func UploadFile(fileHeader *multipart.FileHeader, path string) (string, error) {
+// UploadFile 上传文件，返回文件Key
+func UploadFile(fileHeader *multipart.FileHeader, key string) (string, error) {
 	file, err := fileHeader.Open()
 	defer func(file multipart.File) {
 		err := file.Close()
@@ -25,7 +26,7 @@ func UploadFile(fileHeader *multipart.FileHeader, path string) (string, error) {
 	info, err := database.MinIOClient.PutObject(
 		context.Background(),
 		database.MinIOBucket,
-		path,
+		key,
 		file,
 		fileHeader.Size,
 		minio.PutObjectOptions{ContentType: "image/png"},
@@ -33,11 +34,15 @@ func UploadFile(fileHeader *multipart.FileHeader, path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("%s/%s/%s", database.MinIOClient.EndpointURL(), info.Bucket, info.Key), nil
+	return info.Key, nil
 }
 
-// DeleteFile 删除文件
+// DeleteFile 根据path删除文件
+// url格式：http://127.0.0.1:9000/GoPigKit/1619160061.png，
 func DeleteFile(path string) error {
+	// 找到真实的path
+	path := strings.TrimPrefix(url,
+		fmt.Sprintf("%s/%s/", database.MinIOClient.EndpointURL(), database.MinIOBucket))
 	err := database.MinIOClient.RemoveObject(
 		context.Background(),
 		database.MinIOBucket,
@@ -45,7 +50,7 @@ func DeleteFile(path string) error {
 		minio.RemoveObjectOptions{},
 	)
 	if err != nil {
-		return fmt.Errorf("delete file %s error: %v", path, err)
+		return fmt.Errorf("delete file %s error: %v, path is %s", url, err, path)
 	}
 	return nil
 }
