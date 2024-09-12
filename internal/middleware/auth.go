@@ -71,6 +71,7 @@ func AuthFamily(mustOwner bool) gin.HandlerFunc {
 				return
 			}
 		}
+		c.Set("family_id", user.FamilyID)
 		c.Next()
 	}
 }

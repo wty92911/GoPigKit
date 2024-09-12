@@ -541,6 +541,43 @@ paths:
       tags:
       - file
   /api/v1/food:
+    get:
+      description: 获取自己家庭的所有食物的列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Food'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: 获得所有食物
+      tags:
+      - food
     post:
       consumes:
       - application/json

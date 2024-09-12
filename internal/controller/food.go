@@ -8,6 +8,29 @@ import (
 	"strconv"
 )
 
+// GetAllFoods godoc
+// @Summary 获得所有食物
+// @Description 获取自己家庭的所有食物的列表
+// @Tags food
+// @Produce json
+// @Success 200 {object} gin.H{data=[]model.Food}
+// @Failure 400,500 {object} gin.H{error=string}
+// @Router /api/v1/food [get]
+func (ctl *Controller) GetAllFoods(c *gin.Context) {
+	familyID, exist := c.Get("family_id")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "family_id not exist"})
+		return
+	}
+	var foods []*model.Food
+	var err error
+	if foods, err = service.GetAllFoods(familyID.(uint)); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": foods})
+}
+
 // GetFoodsByCategory godoc
 // @Summary 根据分类获取食物
 // @Description 根据分类ID获取食物列表

@@ -16,8 +16,8 @@ func GetFood(id uint) (*model.Food, error) {
 }
 
 // GetFoodsByFamilyID 根据FamilyID获取食品
-func GetFoodsByFamilyID(familyID uint) ([]model.Food, error) {
-	var foods []model.Food
+func GetFoodsByFamilyID(familyID uint) ([]*model.Food, error) {
+	var foods []*model.Food
 	if err := database.DB.Where("family_id = ?", familyID).Find(&foods).Error; err != nil {
 		return nil, err
 	}

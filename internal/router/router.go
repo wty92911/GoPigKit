@@ -18,6 +18,8 @@ func Init(r *gin.Engine, c *controller.Controller) {
 		})
 	})
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	// create user or update user when login
 	r.POST("/login", c.WeChatLogin)
 	auth := r.Group("/api/v1")
 	auth.Use(middleware.AuthToken(c.Config.App.JwtSecret))
@@ -26,8 +28,7 @@ func Init(r *gin.Engine, c *controller.Controller) {
 		auth.POST("/family/create", c.CreateFamily)
 		auth.POST("/family/join/:id", c.JoinFamily)
 
-		auth.GET("/user")
-		auth.POST("/user")
+		auth.GET("/users", c.GetUsers)
 
 		authFamily := auth.Group("")
 		authFamily.Use(middleware.AuthFamily(false))
@@ -37,11 +38,13 @@ func Init(r *gin.Engine, c *controller.Controller) {
 			auth.DELETE("/delete_file/:url", c.DeleteFile)
 
 			auth.GET("/categories", c.GetCategories)
+
+			auth.GET("/all_foods", c.GetAllFoods)
 			auth.GET("/foods", c.GetFoodsByCategory)
 			auth.POST("/food", c.CreateFood)
 
-			auth.GET("/menu")
-			auth.POST("/menu")
+			auth.GET("/menu", c.GetMenu)
+			auth.POST("/menu", c.CreateMenu)
 
 			auth.GET("/order")
 			auth.POST("/order")

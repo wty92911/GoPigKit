@@ -7,6 +7,11 @@ import (
 	"log"
 )
 
+// GetAllFoods 获取指定家庭的所有菜品
+func GetAllFoods(familyID uint) ([]*model.Food, error) {
+	return dao.GetFoodsByFamilyID(familyID)
+}
+
 // GetFoodsByCategoryID 根据分类ID获取菜品列表
 func GetFoodsByCategoryID(categoryID uint) ([]*model.Food, error) {
 	return dao.GetFoodsByCategoryID(categoryID)
