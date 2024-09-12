@@ -4,7 +4,7 @@ import (
 	"github.com/wty92911/GoPigKit/internal/dao"
 	"github.com/wty92911/GoPigKit/internal/database"
 	"github.com/wty92911/GoPigKit/internal/model"
-	"log"
+	"gorm.io/gorm"
 )
 
 // GetAllFoods 获取指定家庭的所有菜品
@@ -19,17 +19,14 @@ func GetFoodsByCategoryID(categoryID uint) ([]*model.Food, error) {
 
 // CreateFood 创建菜品
 func CreateFood(food *model.Food) (*model.Food, error) {
-	tx := database.DB.Begin()
+	err := database.DB.Transaction(func(tx *gorm.DB) error {
+		if err := dao.CreateFood(tx, food); err != nil {
+			return err // 返回错误时，事务会自动回滚
+		}
+		return nil // 返回 nil 时，事务会提交
+	})
 
-	err := dao.CreateFood(tx, food)
 	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-	// 提交事务
-	if err = tx.Commit().Error; err != nil {
-		tx.Rollback()
-		log.Printf("Transaction commit failed: %v", err)
 		return nil, err
 	}
 	return food, nil

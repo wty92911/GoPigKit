@@ -40,17 +40,16 @@ func UploadFile(fileHeader *multipart.FileHeader, key string) (string, error) {
 // DeleteFile 根据path删除文件
 // url格式：http://127.0.0.1:9000/GoPigKit/1619160061.png，
 func DeleteFile(path string) error {
-	// 找到真实的path
-	path := strings.TrimPrefix(url,
+	key := strings.TrimPrefix(path,
 		fmt.Sprintf("%s/%s/", database.MinIOClient.EndpointURL(), database.MinIOBucket))
 	err := database.MinIOClient.RemoveObject(
 		context.Background(),
 		database.MinIOBucket,
-		path,
+		key,
 		minio.RemoveObjectOptions{},
 	)
 	if err != nil {
-		return fmt.Errorf("delete file %s error: %v, path is %s", url, err, path)
+		return fmt.Errorf("delete file %s error: %v, path is %s", key, err, path)
 	}
 	return nil
 }

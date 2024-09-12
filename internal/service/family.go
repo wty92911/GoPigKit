@@ -5,6 +5,7 @@ import (
 	"github.com/wty92911/GoPigKit/internal/dao"
 	"github.com/wty92911/GoPigKit/internal/database"
 	"github.com/wty92911/GoPigKit/internal/model"
+	"gorm.io/gorm"
 )
 
 // GetAllFamilies 获得所有家庭
@@ -26,32 +27,32 @@ func CreateFamily(openID string, name string) (*model.Family, error) {
 		return nil, err
 	}
 	if user.FamilyID != nil {
-		return nil, fmt.Errorf("user already in family %d", user.FamilyID)
+		return nil, fmt.Errorf("user already in family %d", *user.FamilyID)
 	}
 
-	tx := database.DB.Begin()
-	family := &model.Family{
-		Name:        name,
-		OwnerOpenID: &openID,
-	}
-	err = dao.CreateFamily(tx, family)
+	var family *model.Family
+	err = database.DB.Transaction(func(tx *gorm.DB) error {
+		family = &model.Family{
+			Name:        name,
+			OwnerOpenID: &openID,
+		}
+
+		if err := dao.CreateFamily(tx, family); err != nil {
+			return err // 返回错误时，事务会自动回滚
+		}
+
+		user.FamilyID = &family.ID
+		if err := dao.UpdateUser(tx, user); err != nil {
+			return err // 返回错误时，事务会自动回滚
+		}
+
+		return nil // 返回 nil 时，事务会提交
+	})
+
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
-
-	user.FamilyID = &family.ID
-	err = dao.UpdateUser(tx, user)
-	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
-	if err = tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-	return family, err
+	return family, nil
 }
 
 // JoinFamily 加入家庭
@@ -61,23 +62,23 @@ func JoinFamily(id uint, openID string) (*model.Family, error) {
 		return nil, err
 	}
 	if user.FamilyID != nil {
-		return nil, fmt.Errorf("user already in family %d", user.FamilyID)
+		return nil, fmt.Errorf("user already in family %d", *user.FamilyID)
 	}
 	family, err := dao.GetFamily(id)
 	if err != nil {
 		return nil, err
 	}
 
-	tx := database.DB.Begin()
-	user.FamilyID = &family.ID
-	err = dao.UpdateUser(tx, user)
+	err = database.DB.Transaction(func(tx *gorm.DB) error {
+		user.FamilyID = &family.ID
+		if err := dao.UpdateUser(tx, user); err != nil {
+			return err // 返回错误时，事务会自动回滚
+		}
+		return nil // 返回 nil 时，事务会提交
+	})
+
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
-	if err = tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-	return family, err
+	return family, nil
 }

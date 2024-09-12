@@ -4,6 +4,7 @@ import (
 	"github.com/wty92911/GoPigKit/internal/dao"
 	"github.com/wty92911/GoPigKit/internal/database"
 	"github.com/wty92911/GoPigKit/internal/model"
+	"gorm.io/gorm"
 )
 
 // GetCategories 获取分类列表
@@ -16,15 +17,14 @@ func GetCategories(familyID uint) ([]model.Category, error) {
 	给定对应的分类名称和图片，返回创建好的分类模型，使用transaction保证一致性
 */
 func CreateCategory(category *model.Category) (*model.Category, error) {
-	tx := database.DB.Begin()
+	err := database.DB.Transaction(func(tx *gorm.DB) error {
+		if err := dao.CreateCategory(tx, category); err != nil {
+			return err // 返回错误时，事务会自动回滚
+		}
+		return nil // 返回 nil 时，事务会提交
+	})
 
-	err := dao.CreateCategory(tx, category)
 	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-	if err = tx.Commit().Error; err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 	return category, nil
@@ -35,16 +35,10 @@ func CreateCategory(category *model.Category) (*model.Category, error) {
 	给定category id，删除对应的内容，使用transaction保证一致性
 */
 func DeleteCategory(id uint) error {
-	tx := database.DB.Begin()
-
-	if err := dao.DeleteCategory(tx, id); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-	return nil
+	return database.DB.Transaction(func(tx *gorm.DB) error {
+		if err := dao.DeleteCategory(tx, id); err != nil {
+			return err // 返回错误时，事务会自动回滚
+		}
+		return nil // 返回 nil 时，事务会提交
+	})
 }
