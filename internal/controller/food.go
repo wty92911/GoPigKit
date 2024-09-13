@@ -19,7 +19,7 @@ import (
 func (ctl *Controller) GetAllFoods(c *gin.Context) {
 	familyID, exist := c.Get("family_id")
 	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "family_id not exist"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": FamilyIDRequired})
 		return
 	}
 	var foods []*model.Food

@@ -63,14 +63,14 @@ func (ctl *Controller) GetFamilyWithPreloads(c *gin.Context) {
 // @Failure 400,500 {object} gin.H{error=string}
 // @Router /api/v1/family/create [post]
 func (ctl *Controller) CreateFamily(c *gin.Context) {
-	openID, exist := c.Get("openID")
-	if !exist {
+	openID := c.GetString("openid")
+	if openID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": OpenIDRequired})
 		return
 	}
 	var family *model.Family
 	var err error
-	family, err = service.CreateFamily(openID.(string), c.Query("name"))
+	family, err = service.CreateFamily(openID, c.Query("name"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
