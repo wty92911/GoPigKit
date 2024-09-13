@@ -55,6 +55,16 @@ func CreateFamily(openID string, name string) (*model.Family, error) {
 	return family, nil
 }
 
+// UpdateFamily 更新家庭
+func UpdateFamily(family *model.Family) error {
+	return database.DB.Transaction(func(tx *gorm.DB) error {
+		if err := dao.UpdateFamily(tx, family); err != nil {
+			return err // 返回错误时，事务会自动回滚
+		}
+		return nil // 返回 nil 时，事务会提交
+	})
+}
+
 // JoinFamily 加入家庭
 func JoinFamily(id uint, openID string) (*model.Family, error) {
 	user, err := dao.GetUser(openID)
@@ -81,4 +91,21 @@ func JoinFamily(id uint, openID string) (*model.Family, error) {
 		return nil, err
 	}
 	return family, nil
+}
+
+// ExitFamily 退出家庭
+func ExitFamily(openID string) error {
+	return database.DB.Transaction(func(tx *gorm.DB) error {
+		user, err := dao.GetUser(openID)
+		if err != nil {
+			return err
+		}
+
+		user.FamilyID = nil
+		err = dao.UpdateUser(tx, user)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 }

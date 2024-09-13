@@ -387,6 +387,55 @@ paths:
       summary: 获得所有家庭
       tags:
       - family
+    put:
+      consumes:
+      - application/json
+      description: 更新家庭
+      parameters:
+      - description: 家庭名称
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: 家庭owner的openID
+        in: body
+        name: owner_open_id
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                message:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: 更新家庭
+      tags:
+      - family
   /api/v1/family/create:
     post:
       description: 创建一个新的家庭
@@ -439,7 +488,7 @@ paths:
         required: true
         type: integer
       - collectionFormat: csv
-        description: 预加载项
+        description: 预加载项，如:Users, Foods, Orders, Orders.Items, MenuItems
         in: query
         items:
           type: string
@@ -469,12 +518,39 @@ paths:
       summary: 获得家庭详细情况
       tags:
       - family
-  /api/v1/family/join:
-    post:
+  /api/v1/family/exit:
+    put:
+      description: 退出当前家庭
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                message:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: 退出家庭
+      tags:
+      - family
+  /api/v1/family/join/{id}:
+    put:
       description: 加入一个现有的家庭
       parameters:
       - description: 家庭ID
-        in: query
+        in: path
         name: id
         required: true
         type: integer
@@ -805,7 +881,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: 成功示例：{\"message\":\"success\"}
+          description: OK
           schema:
             allOf:
             - $ref: '#/definitions/gin.H'
@@ -834,7 +910,7 @@ paths:
       summary: 删除菜单项
       tags:
       - menu
-    post:
+    put:
       description: 根据path中的food_id更新菜单项，创建人和家庭根据token自动绑定，通常只会更新数量
       parameters:
       - description: 食品ID

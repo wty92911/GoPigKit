@@ -25,8 +25,8 @@ func Init(r *gin.Engine, c *controller.Controller) {
 	auth.Use(middleware.AuthToken(c.Config.App.JwtSecret))
 	{
 		auth.GET("/family", c.GetAllFamilies)
-		auth.POST("/family/create", c.CreateFamily)
-		auth.POST("/family/join/:id", c.JoinFamily)
+		auth.POST("/family/", c.CreateFamily)
+		auth.PUT("/family/join/:id", c.JoinFamily)
 
 		auth.GET("/users", c.GetUsers)
 
@@ -34,7 +34,7 @@ func Init(r *gin.Engine, c *controller.Controller) {
 		authFamily.Use(middleware.AuthFamily(false))
 		{
 			// 上传文件、图片，要求必须是某个家庭成员
-			auth.GET("/upload_file", c.UploadFile)
+			auth.POST("/upload_file", c.UploadFile)
 			auth.DELETE("/delete_file/:url", c.DeleteFile)
 
 			auth.GET("/categories", c.GetCategories)
@@ -46,16 +46,19 @@ func Init(r *gin.Engine, c *controller.Controller) {
 			auth.GET("/menu", c.GetMenu)
 			auth.POST("/menu", c.AddMenuItem)
 			// 主键是(family_id, food_id)，family_id根据user可以自动推断，所以这里path参数只传food_id
-			auth.POST("/menu/:food_id", c.UpdateMenuItem)
+			auth.PUT("/menu/:food_id", c.UpdateMenuItem)
 			auth.DELETE("/menu/:food_id", c.DeleteMenuItem)
+
+			auth.PUT("/family/exit", c.ExitFamily)
+
 			auth.GET("/order")
 			auth.POST("/order")
 		}
 		authFamily.Use(middleware.AuthFamily(true))
 		{
 			auth.POST("/category", c.CreateCategory)
+			auth.PUT("/family/:id", c.UpdateFamily)
 			auth.DELETE("/category/:id", c.DeleteCategory)
-
 			auth.DELETE("/family")
 			auth.DELETE("/food")
 			auth.DELETE("/order")

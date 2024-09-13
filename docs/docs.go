@@ -313,6 +313,94 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "description": "更新家庭",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "family"
+                ],
+                "summary": "更新家庭",
+                "parameters": [
+                    {
+                        "description": "家庭名称",
+                        "name": "name",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "家庭owner的openID",
+                        "name": "owner_open_id",
+                        "in": "body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/gin.H"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/gin.H"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/gin.H"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
             }
         },
         "/api/v1/family/create": {
@@ -416,7 +504,7 @@ const docTemplate = `{
                             "type": "string"
                         },
                         "collectionFormat": "csv",
-                        "description": "预加载项",
+                        "description": "预加载项，如:Users, Foods, Orders, Orders.Items, MenuItems",
                         "name": "preloads",
                         "in": "query"
                     }
@@ -461,8 +549,58 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/family/join": {
-            "post": {
+        "/api/v1/family/exit": {
+            "put": {
+                "description": "退出当前家庭",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "family"
+                ],
+                "summary": "退出家庭",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/gin.H"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/gin.H"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/family/join/{id}": {
+            "put": {
                 "description": "加入一个现有的家庭",
                 "produces": [
                     "application/json"
@@ -476,7 +614,7 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "家庭ID",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -1050,7 +1188,7 @@ const docTemplate = `{
             }
         },
         "/api/v1/menu/{food_id}": {
-            "post": {
+            "put": {
                 "description": "根据path中的food_id更新菜单项，创建人和家庭根据token自动绑定，通常只会更新数量",
                 "produces": [
                     "application/json"
@@ -1154,7 +1292,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "成功示例：{\\\"message\\\":\\\"success\\\"}",
+                        "description": "OK",
                         "schema": {
                             "allOf": [
                                 {

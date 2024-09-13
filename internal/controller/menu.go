@@ -76,7 +76,7 @@ func (ctl *Controller) AddMenuItem(c *gin.Context) {
 // @Param quantity body uint true "数量"
 // @Success 200 {object} gin.H{data=model.MenuItem}
 // @Failure 400,500 {object} gin.H{error=string}
-// @Router /api/v1/menu/{food_id} [post]
+// @Router /api/v1/menu/{food_id} [put]
 func (ctl *Controller) UpdateMenuItem(c *gin.Context) {
 	openID := c.GetString("openid")
 	if openID == "" {
