@@ -20,6 +20,10 @@ const (
 	PathRequired              = "path is required"
 	URLRequired               = "url is required"
 	OpenIDRequired            = "open id is required"
+	FamilyIDRequired          = "family id is required"
+	QuantityRequired          = "quantity is required"
+	InvalidFoodID             = "invalid food id"
+	InvalidQuantity           = "invalid quantity"
 )
 
 func NewController(config *configs.Config) *Controller {

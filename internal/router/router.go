@@ -44,8 +44,10 @@ func Init(r *gin.Engine, c *controller.Controller) {
 			auth.POST("/food", c.CreateFood)
 
 			auth.GET("/menu", c.GetMenu)
-			auth.POST("/menu", c.CreateMenu)
-
+			auth.POST("/menu", c.AddMenuItem)
+			// 主键是(family_id, food_id)，family_id根据user可以自动推断，所以这里path参数只传food_id
+			auth.POST("/menu/:food_id", c.UpdateMenuItem)
+			auth.DELETE("/menu/:food_id", c.DeleteMenuItem)
 			auth.GET("/order")
 			auth.POST("/order")
 		}
