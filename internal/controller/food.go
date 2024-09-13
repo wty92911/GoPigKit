@@ -79,3 +79,25 @@ func (ctl *Controller) CreateFood(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": food})
 }
+
+// DeleteFood godoc
+// @Summary 删除食物
+// @Description 删除食物
+// @Tags 食物
+// @Accept  json
+// @Produce  json
+// @Param id path int true "食物ID"
+// @Router /api/v1/foods/{id} [delete]
+func (ctl *Controller) DeleteFood(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err = service.DeleteFood(uint(id))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "success"})
+}

@@ -31,3 +31,13 @@ func CreateFood(food *model.Food) (*model.Food, error) {
 	}
 	return food, nil
 }
+
+// DeleteFood 删除菜品
+func DeleteFood(id uint) error {
+	return database.DB.Transaction(func(tx *gorm.DB) error {
+		if err := dao.DeleteFood(tx, id); err != nil {
+			return err
+		}
+		return nil
+	})
+}

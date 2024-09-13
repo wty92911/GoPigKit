@@ -737,6 +737,23 @@ paths:
       summary: 根据分类获取食物
       tags:
       - food
+  /api/v1/foods/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除食物
+      parameters:
+      - description: 食物ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: 删除食物
+      tags:
+      - 食物
   /api/v1/login:
     post:
       consumes:

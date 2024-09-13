@@ -59,9 +59,10 @@ func Init(r *gin.Engine, c *controller.Controller) {
 			auth.POST("/category", c.CreateCategory)
 			auth.PUT("/family/:id", c.UpdateFamily)
 			auth.DELETE("/category/:id", c.DeleteCategory)
+			auth.DELETE("/food/:id", c.DeleteFood)
+			auth.DELETE("/order/:id")
 			auth.DELETE("/family")
-			auth.DELETE("/food")
-			auth.DELETE("/order")
+
 		}
 
 	}

@@ -948,6 +948,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/foods/{id}": {
+            "delete": {
+                "description": "删除食物",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "食物"
+                ],
+                "summary": "删除食物",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "食物ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/v1/login": {
             "post": {
                 "description": "用户使用微信登录，后端绑定微信账户并返回JWT token",
