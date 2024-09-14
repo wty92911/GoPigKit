@@ -135,34 +135,33 @@ definitions:
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
       family_id:
-        description: 家庭ID，外键
         type: integer
       id:
         type: integer
       items:
-        description: 关联的订单项，联级删除
         items:
           $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.OrderItem'
         type: array
       updatedAt:
         type: string
+    required:
+    - items
     type: object
   github_com_wty92911_GoPigKit_internal_model.OrderItem:
     properties:
       created_by:
-        description: 创建者，外键
         type: string
       food_id:
-        description: 食品ID
         type: integer
       order_id:
-        description: 订单ID，外键
         type: integer
       quantity:
-        description: 数量
         type: integer
       user:
         $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.User'
+    required:
+    - food_id
+    - quantity
     type: object
   github_com_wty92911_GoPigKit_internal_model.User:
     properties:
@@ -343,7 +342,7 @@ paths:
             allOf:
             - $ref: '#/definitions/gin.H'
             - properties:
-                error:
+                message:
                   type: string
               type: object
         "500":
@@ -352,7 +351,7 @@ paths:
             allOf:
             - $ref: '#/definitions/gin.H'
             - properties:
-                message:
+                error:
                   type: string
               type: object
       summary: 删除分类
@@ -565,15 +564,6 @@ paths:
             - properties:
                 data:
                   $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Family'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            allOf:
-            - $ref: '#/definitions/gin.H'
-            - properties:
-                error:
-                  type: string
               type: object
         "500":
           description: Internal Server Error
@@ -974,6 +964,116 @@ paths:
       summary: 更新菜单项
       tags:
       - menu
+  /api/v1/order/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除订单
+      parameters:
+      - description: 订单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                message:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: 删除订单
+      tags:
+      - 订单
+  /api/v1/orders:
+    get:
+      description: 获取用户家庭的订单列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.Order'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: 获取订单列表
+      tags:
+      - order
+    post:
+      consumes:
+      - application/json
+      description: 创建订单
+      parameters:
+      - description: 订单项
+        in: body
+        name: items
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/github_com_wty92911_GoPigKit_internal_model.MenuItem'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                message:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: 创建订单
+      tags:
+      - order
   /api/v1/upload:
     post:
       consumes:

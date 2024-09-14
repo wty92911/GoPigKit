@@ -51,8 +51,8 @@ func Init(r *gin.Engine, c *controller.Controller) {
 
 			auth.PUT("/family/exit", c.ExitFamily)
 
-			auth.GET("/order")
-			auth.POST("/order")
+			auth.GET("/orders", c.GetOrders)
+			auth.POST("/order", c.CreateOrder)
 		}
 		authFamily.Use(middleware.AuthFamily(true))
 		{
@@ -60,7 +60,7 @@ func Init(r *gin.Engine, c *controller.Controller) {
 			auth.PUT("/family/:id", c.UpdateFamily)
 			auth.DELETE("/category/:id", c.DeleteCategory)
 			auth.DELETE("/food/:id", c.DeleteFood)
-			auth.DELETE("/order/:id")
+			auth.DELETE("/order/:id", c.DeleteOrder)
 			auth.DELETE("/family")
 
 		}
