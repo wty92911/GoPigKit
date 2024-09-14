@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	// Code2Session 微信 code2session 接口
+	// Code2SessionAPI 微信 code2session 接口
 	Code2SessionAPI = "https://api.weixin.qq.com/sns/jscode2session"
 )
 

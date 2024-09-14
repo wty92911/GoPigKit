@@ -1,3 +1,4 @@
+// Package middleware 中间件层，主要负责鉴权
 package middleware
 
 // RoleAuth 是一个简单的角色鉴权中间件

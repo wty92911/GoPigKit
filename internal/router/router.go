@@ -1,3 +1,4 @@
+// Package router 路由层，负责路由的注册、保护逻辑。
 package router
 
 import (
