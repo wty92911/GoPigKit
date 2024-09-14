@@ -62,8 +62,8 @@ func (ctl *Controller) CreateCategory(c *gin.Context) {
 // @Tags category
 // @Produce json
 // @Param id path int true "分类ID"
-// @Success 200 {object} gin.H{error=string}
-// @Failure 500 {object} gin.H{message=string}
+// @Success 200 {object} gin.H{message=string}
+// @Failure 500 {object} gin.H{error=string}
 // @Router /api/v1/category/{id} [delete]
 func (ctl *Controller) DeleteCategory(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
