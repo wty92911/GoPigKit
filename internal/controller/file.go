@@ -34,7 +34,7 @@ func (ctl *Controller) UploadFile(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": PathRequired})
 		return
 	}
-	user, err := service.GetUser(c.GetString("openID"))
+	user, err := service.GetUser(c.GetString("open_id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -42,7 +42,7 @@ func (ctl *Controller) GetMenu(c *gin.Context) {
 // @Failure 400,500 {object} gin.H{error=string}
 // @Router /api/v1/menu [post]
 func (ctl *Controller) AddMenuItem(c *gin.Context) {
-	openID := c.GetString("openid")
+	openID := c.GetString("open_id")
 	if openID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": OpenIDRequired})
 		return
@@ -78,7 +78,7 @@ func (ctl *Controller) AddMenuItem(c *gin.Context) {
 // @Failure 400,500 {object} gin.H{error=string}
 // @Router /api/v1/menu/{food_id} [put]
 func (ctl *Controller) UpdateMenuItem(c *gin.Context) {
-	openID := c.GetString("openid")
+	openID := c.GetString("open_id")
 	if openID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": OpenIDRequired})
 		return
@@ -123,7 +123,7 @@ func (ctl *Controller) UpdateMenuItem(c *gin.Context) {
 // @Failure 400,500 {object} gin.H{error=string}
 // @Router /api/v1/menu/{food_id} [delete]
 func (ctl *Controller) DeleteMenuItem(c *gin.Context) {
-	openID := c.GetString("openid")
+	openID := c.GetString("open_id")
 	if openID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": OpenIDRequired})
 		return

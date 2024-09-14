@@ -10,7 +10,7 @@ import (
 )
 
 type Claims struct {
-	OpenID string `json:"openid"`
+	OpenID string `json:"open_id"`
 	jwt.RegisteredClaims
 }
 
@@ -30,7 +30,7 @@ func AuthToken(jwtSecret string) gin.HandlerFunc {
 		})
 
 		if claims, ok := token.Claims.(*Claims); ok && token.Valid {
-			c.Set("openid", claims.OpenID)
+			c.Set("open_id", claims.OpenID)
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()
@@ -43,13 +43,13 @@ func AuthToken(jwtSecret string) gin.HandlerFunc {
 // AuthFamily 验证是否加入家庭，
 func AuthFamily(mustOwner bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		openid := c.GetString("openid")
-		if openid == "" {
+		openID := c.GetString("open_id")
+		if openID == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
 			c.Abort()
 			return
 		}
-		user, err := dao.GetUser(openid)
+		user, err := dao.GetUser(openID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			c.Abort()

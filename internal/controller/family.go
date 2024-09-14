@@ -61,7 +61,7 @@ func (ctl *Controller) GetFamilyWithPreloads(c *gin.Context) {
 // @Failure 400,500 {object} gin.H{error=string}
 // @Router /api/v1/family/create [post]
 func (ctl *Controller) CreateFamily(c *gin.Context) {
-	openID := c.GetString("openid")
+	openID := c.GetString("open_id")
 	if openID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": OpenIDRequired})
 		return
@@ -94,7 +94,7 @@ func (ctl *Controller) UpdateFamily(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	openID := c.GetString("openid")
+	openID := c.GetString("open_id")
 	user, err := service.GetUser(openID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -123,17 +123,13 @@ func (ctl *Controller) UpdateFamily(c *gin.Context) {
 // @Produce json
 // @Param id path int true "家庭ID"
 // @Success 200 {object} gin.H{data=model.Family}
-// @Failure 400,500 {object} gin.H{error=string}
+// @Failure 500 {object} gin.H{error=string}
 // @Router /api/v1/family/join/{id} [put]
 func (ctl *Controller) JoinFamily(c *gin.Context) {
 	id := c.Param("id")
 	familyID, _ := strconv.Atoi(id)
-	openID, exist := c.Get("openid")
-	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"error": OpenIDRequired})
-		return
-	}
-	family, err := service.JoinFamily(uint(familyID), openID.(string))
+	openID := c.GetString("open_id")
+	family, err := service.JoinFamily(uint(familyID), openID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -150,7 +146,7 @@ func (ctl *Controller) JoinFamily(c *gin.Context) {
 // @Failure 500 {object} gin.H{error=string}
 // @Router /api/v1/family/exit [put]
 func (ctl *Controller) ExitFamily(c *gin.Context) {
-	openID := c.GetString("openid")
+	openID := c.GetString("open_id")
 	if err := service.ExitFamily(openID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
