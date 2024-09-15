@@ -20,7 +20,7 @@ import (
 // @Param path formData string true "文件路径"
 // @Success 200 {object} gin.H{data=string}
 // @Failure 400,500 {object} gin.H{error=string}
-// @Router /api/v1/upload [post]
+// @Router /api/v1/file [post]
 func (ctl *Controller) UploadFile(c *gin.Context) {
 	fileHeader, err := c.FormFile("file")
 	if err != nil {
@@ -39,7 +39,10 @@ func (ctl *Controller) UploadFile(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	key := fmt.Sprintf("%d/%s", user.FamilyID, path)
+	if path[0] != '/' {
+		path = "/" + path
+	}
+	key := fmt.Sprintf("%d%s", *user.FamilyID, path)
 
 	// 上传文件
 	key, err = service.UploadFile(fileHeader, key)
@@ -56,18 +59,21 @@ func (ctl *Controller) UploadFile(c *gin.Context) {
 // @Summary 删除文件
 // @Description 根据文件路径删除文件
 // @Tags file
+// @Accept json
 // @Produce json
-// @Param url path string true "文件路径"
+// @Param url body string true "文件路径"
 // @Success 200 {object} gin.H{message=string}
 // @Failure 500 {object} gin.H{error=string}
-// @Router /api/v1/file/{url} [delete]
+// @Router /api/v1/file/delete [post]
 func (ctl *Controller) DeleteFile(c *gin.Context) {
-	url := c.Param("url")
-	if url == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": URLRequired})
+	var data struct {
+		URL string `json:"url" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := service.DeleteFile(url); err != nil {
+	if err := service.DeleteFile(data.URL); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

@@ -26,7 +26,7 @@ func AuthToken(jwtSecret string) gin.HandlerFunc {
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		token, _ := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-			return jwtSecret, nil
+			return []byte(jwtSecret), nil
 		})
 
 		if claims, ok := token.Claims.(*Claims); ok && token.Valid {
@@ -56,7 +56,7 @@ func AuthFamily(mustOwner bool) gin.HandlerFunc {
 			return
 		}
 		if user.FamilyID == nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "CreatedUser not in family"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Created User" + user.OpenID + " not in family"})
 			c.Abort()
 			return
 		}

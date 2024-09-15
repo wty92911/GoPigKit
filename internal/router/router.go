@@ -26,7 +26,7 @@ func Init(r *gin.Engine, c *controller.Controller) {
 	auth.Use(middleware.AuthToken(c.Config.App.JwtSecret))
 	{
 		auth.GET("/family", c.GetAllFamilies)
-		auth.POST("/family/", c.CreateFamily)
+		auth.POST("/family/create", c.CreateFamily)
 		auth.PUT("/family/join/:id", c.JoinFamily)
 
 		auth.GET("/users", c.GetUsers)
@@ -35,34 +35,36 @@ func Init(r *gin.Engine, c *controller.Controller) {
 		authFamily.Use(middleware.AuthFamily(false))
 		{
 			// 上传文件、图片，要求必须是某个家庭成员
-			auth.POST("/upload_file", c.UploadFile)
-			auth.DELETE("/delete_file/:url", c.DeleteFile)
+			authFamily.POST("/file", c.UploadFile)
+			// 因为是传url，所以用POST方式和upload区分开
+			authFamily.POST("/file/delete", c.DeleteFile)
 
-			auth.GET("/categories", c.GetCategories)
+			authFamily.GET("/categories", c.GetCategories)
 
-			auth.GET("/all_foods", c.GetAllFoods)
-			auth.GET("/foods", c.GetFoodsByCategory)
-			auth.POST("/food", c.CreateFood)
+			authFamily.GET("/all_foods", c.GetAllFoods)
+			authFamily.GET("/foods", c.GetFoodsByCategory)
+			authFamily.POST("/food", c.CreateFood)
 
-			auth.GET("/menu", c.GetMenu)
-			auth.POST("/menu", c.AddMenuItem)
+			authFamily.GET("/menu", c.GetMenu)
+			authFamily.POST("/menu", c.AddMenuItem)
 			// 主键是(family_id, food_id)，family_id根据user可以自动推断，所以这里path参数只传food_id
-			auth.PUT("/menu/:food_id", c.UpdateMenuItem)
-			auth.DELETE("/menu/:food_id", c.DeleteMenuItem)
+			authFamily.PUT("/menu/:food_id", c.UpdateMenuItem)
+			authFamily.DELETE("/menu/:food_id", c.DeleteMenuItem)
 
-			auth.PUT("/family/exit", c.ExitFamily)
+			authFamily.PUT("/family/exit", c.ExitFamily)
 
-			auth.GET("/orders", c.GetOrders)
-			auth.POST("/order", c.CreateOrder)
+			authFamily.GET("/orders", c.GetOrders)
+			authFamily.POST("/order", c.CreateOrder)
 		}
-		authFamily.Use(middleware.AuthFamily(true))
+		authFamilyOwner := auth.Group("")
+		authFamilyOwner.Use(middleware.AuthFamily(true))
 		{
-			auth.POST("/category", c.CreateCategory)
-			auth.PUT("/family/:id", c.UpdateFamily)
-			auth.DELETE("/category/:id", c.DeleteCategory)
-			auth.DELETE("/food/:id", c.DeleteFood)
-			auth.DELETE("/order/:id", c.DeleteOrder)
-			auth.DELETE("/family")
+			authFamilyOwner.POST("/category", c.CreateCategory)
+			authFamilyOwner.PUT("/family/:id", c.UpdateFamily)
+			authFamilyOwner.DELETE("/category/:id", c.DeleteCategory)
+			authFamilyOwner.DELETE("/food/:id", c.DeleteFood)
+			authFamilyOwner.DELETE("/order/:id", c.DeleteOrder)
+			authFamilyOwner.DELETE("/family")
 
 		}
 

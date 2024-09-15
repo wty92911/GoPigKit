@@ -13,18 +13,19 @@ import (
 )
 
 type UserInfo struct {
+	OpenID    string `json:"open_id"`
 	Nickname  string `json:"nickname"`
 	AvatarURL string `json:"avatar_url"`
 }
 type WeChatLoginRequest struct {
 	Code     string   `json:"code" binding:"required"`
-	UserInfo UserInfo `json:"userInfo"`
+	UserInfo UserInfo `json:"user_info"`
 }
 
 // WeChatLogin godoc
 // @Summary 后端绑定微信登陆, 返回token
 // @Description 用户使用微信登录，后端绑定微信账户并返回JWT token
-// @Tags auth
+// @Tags user
 // @Accept json
 // @Produce json
 // @Param req body WeChatLoginRequest true "微信登录请求"
@@ -37,12 +38,21 @@ func (ctl *Controller) WeChatLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	rsp, err := wxhelper.Code2Session(ctl.Config.App, req.Code)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	var rsp *wxhelper.Code2SessionResponse
+	var err error
+	if gin.Mode() != gin.TestMode {
+		rsp, err = wxhelper.Code2Session(ctl.Config.App, req.Code)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	} else {
+		// test mode
+		rsp = &wxhelper.Code2SessionResponse{
+			OpenID: req.UserInfo.OpenID,
+		}
 	}
+
 	user := &model.User{
 		OpenID:    rsp.OpenID,
 		Name:      req.UserInfo.Nickname,
@@ -69,9 +79,9 @@ func (ctl *Controller) WeChatLogin(c *gin.Context) {
 
 	// Create token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(ctl.Config.App.JwtSecret)
+	tokenString, err := token.SignedString([]byte(ctl.Config.App.JwtSecret))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token, err: " + err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})

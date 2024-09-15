@@ -36,5 +36,5 @@ func DeleteUser(tx *gorm.DB, openID string) error {
 
 // UpdateUser 更新用户信息
 func UpdateUser(tx *gorm.DB, user *model.User) error {
-	return tx.Save(user).Error
+	return tx.Omit("CreatedAt").Save(user).Error
 }

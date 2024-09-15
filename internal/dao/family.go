@@ -50,5 +50,5 @@ func DeleteFamily(tx *gorm.DB, id uint) error {
 
 // UpdateFamily 更新Family信息
 func UpdateFamily(tx *gorm.DB, family *model.Family) error {
-	return tx.Save(family).Error
+	return tx.Omit("CreatedAt").Save(family).Error
 }

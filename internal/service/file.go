@@ -13,16 +13,16 @@ import (
 // UploadFile 上传文件，返回文件Key
 func UploadFile(fileHeader *multipart.FileHeader, key string) (string, error) {
 	file, err := fileHeader.Open()
+	if err != nil {
+		return "", fmt.Errorf("fileHeader open err:%v", err)
+	}
 	defer func(file multipart.File) {
 		err := file.Close()
 		if err != nil {
 			log.Println(err)
 		}
 	}(file)
-	if err != nil {
-		return "", err
-	}
-
+	log.Println(key)
 	info, err := database.MinIOClient.PutObject(
 		context.Background(),
 		database.MinIOBucket,
@@ -32,7 +32,7 @@ func UploadFile(fileHeader *multipart.FileHeader, key string) (string, error) {
 		minio.PutObjectOptions{ContentType: "image/png"},
 	)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("MinIO put object err:%v", err)
 	}
 	return info.Key, nil
 }

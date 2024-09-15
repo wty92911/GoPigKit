@@ -43,7 +43,7 @@ func CreateCategory(tx *gorm.DB, category *model.Category) error {
 
 // UpdateCategory 更新分类
 func UpdateCategory(tx *gorm.DB, category *model.Category) error {
-	return tx.Save(category).Error
+	return tx.Omit("CreatedAt").Save(category).Error
 }
 
 // DeleteCategory 根据id删除分类

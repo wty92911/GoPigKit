@@ -55,8 +55,9 @@ func (ctl *Controller) GetFamilyWithPreloads(c *gin.Context) {
 // @Summary 创建家庭
 // @Description 创建一个新的家庭
 // @Tags family
+// @Accept json
 // @Produce json
-// @Param name query string true "家庭名称"
+// @Param name body string true "家庭名称"
 // @Success 200 {object} gin.H{data=model.Family}
 // @Failure 400,500 {object} gin.H{error=string}
 // @Router /api/v1/family/create [post]
@@ -66,9 +67,12 @@ func (ctl *Controller) CreateFamily(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": OpenIDRequired})
 		return
 	}
-	var family *model.Family
-	var err error
-	family, err = service.CreateFamily(openID, c.Query("name"))
+	var req *model.Family
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": NameRequired})
+		return
+	}
+	family, err := service.CreateFamily(openID, req.Name)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
