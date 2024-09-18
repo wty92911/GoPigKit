@@ -33,6 +33,14 @@ func joinFamily(t *testing.T, router *gin.Engine, token1 string, id string) *htt
 	t.Log(w.Body)
 	return w
 }
+func exitFamily(t *testing.T, router *gin.Engine, token1 string) *httptest.ResponseRecorder {
+	req, _ := http.NewRequest("PUT", "/api/v1/family/exit", nil)
+	req.Header.Set("Authorization", "Bearer "+token1)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+	t.Log(w.Body)
+	return w
+}
 func TestJoinFamily(t *testing.T) {
 	router := setupRouter(true)
 	token := testWechatLogin(t, router, "test1")
@@ -40,6 +48,25 @@ func TestJoinFamily(t *testing.T) {
 	token2 := testWechatLogin(t, router, "test2")
 	w := joinFamily(t, router, token2, "1")
 	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestExitFamily(t *testing.T) {
+	router := setupRouter(true)
+	token := testWechatLogin(t, router, "test1")
+	createFamily(t, router, token, "test1_family")
+	token2 := testWechatLogin(t, router, "test2")
+	w := joinFamily(t, router, token2, "1")
+	assert.Equal(t, http.StatusOK, w.Code)
+	w = exitFamily(t, router, token2)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestOwnerExitFamily(t *testing.T) {
+	router := setupRouter(true)
+	token := testWechatLogin(t, router, "test1")
+	createFamily(t, router, token, "test1_family")
+	w := exitFamily(t, router, token)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
 }
 
 func TestGetAllFamilies(t *testing.T) {
