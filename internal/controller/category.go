@@ -33,7 +33,6 @@ func (ctl *Controller) GetCategories(c *gin.Context) {
 // @Tags category
 // @Accept json
 // @Produce json
-// @Param family_id body uint true "家庭ID"
 // @Param top_name body string true "顶级分类名称"
 // @Param mid_name body string true "中间分类名称"
 // @Param name body string true "分类名称"
@@ -42,13 +41,20 @@ func (ctl *Controller) GetCategories(c *gin.Context) {
 // @Failure 400,500 {object} gin.H{error=string}
 // @Router /api/v1/category [post]
 func (ctl *Controller) CreateCategory(c *gin.Context) {
-	var req *model.Category
+	var req model.Category
 	// 绑定并验证请求参数
-	if err := c.ShouldBind(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	category, err := service.CreateCategory(req)
+	openID := c.GetString("open_id")
+	user, err := service.GetUser(openID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	req.FamilyID = user.FamilyID
+	category, err := service.CreateCategory(&req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

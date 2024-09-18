@@ -19,9 +19,9 @@ func GetCategories(familyID uint) ([]model.Category, error) {
 func CreateCategory(category *model.Category) (*model.Category, error) {
 	err := database.DB.Transaction(func(tx *gorm.DB) error {
 		if err := dao.CreateCategory(tx, category); err != nil {
-			return err // 返回错误时，事务会自动回滚
+			return err
 		}
-		return nil // 返回 nil 时，事务会提交
+		return nil
 	})
 
 	if err != nil {
@@ -37,8 +37,8 @@ func CreateCategory(category *model.Category) (*model.Category, error) {
 func DeleteCategory(id uint) error {
 	return database.DB.Transaction(func(tx *gorm.DB) error {
 		if err := dao.DeleteCategory(tx, id); err != nil {
-			return err // 返回错误时，事务会自动回滚
+			return err
 		}
-		return nil // 返回 nil 时，事务会提交
+		return nil
 	})
 }

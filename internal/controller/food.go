@@ -63,7 +63,7 @@ func (ctl *Controller) GetFoodsByCategory(c *gin.Context) {
 // @Failure 400,500 {object} gin.H{error=string}
 // @Router /api/v1/food [post]
 func (ctl *Controller) CreateFood(c *gin.Context) {
-	var req *model.Food
+	var req model.Food
 	// 绑定并验证请求参数
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -71,7 +71,7 @@ func (ctl *Controller) CreateFood(c *gin.Context) {
 	}
 
 	// 调用服务层创建食品
-	food, err := service.CreateFood(req)
+	food, err := service.CreateFood(&req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

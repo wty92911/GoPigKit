@@ -67,7 +67,7 @@ func (ctl *Controller) CreateFamily(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": OpenIDRequired})
 		return
 	}
-	var req *model.Family
+	var req model.Family
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": NameRequired})
 		return
@@ -92,7 +92,7 @@ func (ctl *Controller) CreateFamily(c *gin.Context) {
 // @Failure 400,500 {object} gin.H{error=string}
 // @Router /api/v1/family [put]
 func (ctl *Controller) UpdateFamily(c *gin.Context) {
-	var req *model.Family
+	var req model.Family
 	// 绑定并验证请求参数
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -151,6 +151,7 @@ func (ctl *Controller) JoinFamily(c *gin.Context) {
 // @Router /api/v1/family/exit [put]
 func (ctl *Controller) ExitFamily(c *gin.Context) {
 	openID := c.GetString("open_id")
+
 	if err := service.ExitFamily(openID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

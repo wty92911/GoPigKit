@@ -100,7 +100,13 @@ func ExitFamily(openID string) error {
 		if err != nil {
 			return err
 		}
-
+		family, err := dao.GetFamily(*user.FamilyID)
+		if err != nil {
+			return err
+		}
+		if family.OwnerOpenID != nil && *family.OwnerOpenID == openID {
+			return fmt.Errorf("family owner can't exit family")
+		}
 		user.FamilyID = nil
 		err = dao.UpdateUser(tx, user)
 		if err != nil {
