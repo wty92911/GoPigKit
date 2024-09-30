@@ -100,15 +100,6 @@ const docTemplate = `{
                 "summary": "创建分类",
                 "parameters": [
                     {
-                        "description": "家庭ID",
-                        "name": "family_id",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
                         "description": "顶级分类名称",
                         "name": "top_name",
                         "in": "body",
@@ -406,6 +397,9 @@ const docTemplate = `{
         "/api/v1/family/create": {
             "post": {
                 "description": "创建一个新的家庭",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -415,11 +409,13 @@ const docTemplate = `{
                 "summary": "创建家庭",
                 "parameters": [
                     {
-                        "type": "string",
                         "description": "家庭名称",
                         "name": "name",
-                        "in": "query",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -658,9 +654,99 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/file/{url}": {
-            "delete": {
+        "/api/v1/file": {
+            "post": {
+                "description": "上传文件",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "file"
+                ],
+                "summary": "上传文件",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "上传文件",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "文件路径",
+                        "name": "path",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/gin.H"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/gin.H"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/gin.H"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/file/delete": {
+            "post": {
                 "description": "根据文件路径删除文件",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -670,11 +756,13 @@ const docTemplate = `{
                 "summary": "删除文件",
                 "parameters": [
                     {
-                        "type": "string",
                         "description": "文件路径",
                         "name": "url",
-                        "in": "path",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -965,7 +1053,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "user"
                 ],
                 "summary": "后端绑定微信登陆, 返回token",
                 "parameters": [
@@ -1365,7 +1453,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "订单"
+                    "order"
                 ],
                 "summary": "删除订单",
                 "parameters": [
@@ -1553,93 +1641,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/upload": {
-            "post": {
-                "description": "上传文件",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "file"
-                ],
-                "summary": "上传文件",
-                "parameters": [
-                    {
-                        "type": "file",
-                        "description": "上传文件",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "文件路径",
-                        "name": "path",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/gin.H"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/gin.H"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/gin.H"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/users": {
             "get": {
                 "description": "获取所有用户的列表",
@@ -1702,7 +1703,6 @@ const docTemplate = `{
         "github_com_wty92911_GoPigKit_internal_model.Category": {
             "type": "object",
             "required": [
-                "family_id",
                 "image_url",
                 "mid_name",
                 "name",
@@ -1982,6 +1982,9 @@ const docTemplate = `{
                 },
                 "nickname": {
                     "type": "string"
+                },
+                "open_id": {
+                    "type": "string"
                 }
             }
         },
@@ -1994,7 +1997,7 @@ const docTemplate = `{
                 "code": {
                     "type": "string"
                 },
-                "userInfo": {
+                "user_info": {
                     "$ref": "#/definitions/internal_controller.UserInfo"
                 }
             }

@@ -28,7 +28,6 @@ definitions:
       updatedAt:
         type: string
     required:
-    - family_id
     - image_url
     - mid_name
     - name
@@ -197,12 +196,14 @@ definitions:
         type: string
       nickname:
         type: string
+      open_id:
+        type: string
     type: object
   internal_controller.WeChatLoginRequest:
     properties:
       code:
         type: string
-      userInfo:
+      user_info:
         $ref: '#/definitions/internal_controller.UserInfo'
     required:
     - code
@@ -261,12 +262,6 @@ paths:
       - application/json
       description: 创建分类,包括分类的三级名称、图片，返回创建好的分类+图片链接
       parameters:
-      - description: 家庭ID
-        in: body
-        name: family_id
-        required: true
-        schema:
-          type: integer
       - description: 顶级分类名称
         in: body
         name: top_name
@@ -437,13 +432,16 @@ paths:
       - family
   /api/v1/family/create:
     post:
+      consumes:
+      - application/json
       description: 创建一个新的家庭
       parameters:
       - description: 家庭名称
-        in: query
+        in: body
         name: name
         required: true
-        type: string
+        schema:
+          type: string
       produces:
       - application/json
       responses:
@@ -577,15 +575,67 @@ paths:
       summary: 加入家庭
       tags:
       - family
-  /api/v1/file/{url}:
-    delete:
+  /api/v1/file:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 上传文件
+      parameters:
+      - description: 上传文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: 文件路径
+        in: formData
+        name: path
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/gin.H'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: 上传文件
+      tags:
+      - file
+  /api/v1/file/delete:
+    post:
+      consumes:
+      - application/json
       description: 根据文件路径删除文件
       parameters:
       - description: 文件路径
-        in: path
+        in: body
         name: url
         required: true
-        type: string
+        schema:
+          type: string
       produces:
       - application/json
       responses:
@@ -788,7 +838,7 @@ paths:
               type: object
       summary: 后端绑定微信登陆, 返回token
       tags:
-      - auth
+      - user
   /api/v1/menu:
     get:
       description: 获取本家庭的菜单列表
@@ -998,7 +1048,7 @@ paths:
               type: object
       summary: 删除订单
       tags:
-      - 订单
+      - order
   /api/v1/orders:
     get:
       description: 获取用户家庭的订单列表
@@ -1074,55 +1124,6 @@ paths:
       summary: 创建订单
       tags:
       - order
-  /api/v1/upload:
-    post:
-      consumes:
-      - multipart/form-data
-      description: 上传文件
-      parameters:
-      - description: 上传文件
-        in: formData
-        name: file
-        required: true
-        type: file
-      - description: 文件路径
-        in: formData
-        name: path
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/gin.H'
-            - properties:
-                data:
-                  type: string
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            allOf:
-            - $ref: '#/definitions/gin.H'
-            - properties:
-                error:
-                  type: string
-              type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            allOf:
-            - $ref: '#/definitions/gin.H'
-            - properties:
-                error:
-                  type: string
-              type: object
-      summary: 上传文件
-      tags:
-      - file
   /api/v1/users:
     get:
       description: 获取所有用户的列表

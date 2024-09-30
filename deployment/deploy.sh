@@ -11,6 +11,8 @@ scp *.tar.gz myserver:~
 ssh myserver << 'EOF'
 # 进入用户主目录
 cd ~
+# 停止服务
+sh pigkit/bin/server.sh stop
 
 # 备份并解压新文件
 rm -rf pigkit_backup && mv pigkit pigkit_backup

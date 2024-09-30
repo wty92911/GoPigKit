@@ -63,7 +63,7 @@ func (ctl *Controller) CreateOrder(c *gin.Context) {
 // DeleteOrder godoc
 // @Summary 删除订单
 // @Description 删除订单
-// @Tags 订单
+// @Tags order
 // @Accept  json
 // @Produce  json
 // @Param id path uint true "订单ID"
